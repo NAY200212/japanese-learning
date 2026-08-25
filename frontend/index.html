@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ことば — 登录</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+
+  <div class="auth-wrap">
+    <aside class="auth-brand">
+      <div class="brand-mark">こ</div>
+      <h1>ことば</h1>
+      <p class="brand-sub">日语学习平台</p>
+      <p class="brand-note">从五十音开始，每天学一点。</p>
+    </aside>
+
+    <main class="auth-form">
+      <div class="auth-tabs">
+        <button class="tab active" data-tab="login">登录</button>
+        <button class="tab" data-tab="register">注册</button>
+      </div>
+
+      <form id="loginForm" class="form">
+        <label>用户名
+          <input name="username" required autocomplete="username">
+        </label>
+        <label>密码
+          <input name="password" type="password" required autocomplete="current-password">
+        </label>
+        <button type="submit" class="btn-primary">登录</button>
+      </form>
+
+      <form id="registerForm" class="form hidden">
+        <label>用户名
+          <input name="username" required autocomplete="username">
+        </label>
+        <label>密码
+          <input name="password" type="password" required minlength="6" autocomplete="new-password">
+        </label>
+        <label>邮箱（选填）
+          <input name="email" type="email" autocomplete="email">
+        </label>
+        <button type="submit" class="btn-primary">注册</button>
+      </form>
+
+      <p class="form-msg" id="msg"></p>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
