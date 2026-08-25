@@ -36,13 +36,16 @@ jobs:
           java-version: '17'
           cache: maven
 
+      - name: 安装 MySQL 客户端
+        run: sudo apt-get update && sudo apt-get install -y default-mysql-client
+
       - name: 初始化数据库
         run: |
           mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS japanese_learning DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
           mysql -h 127.0.0.1 -uroot -proot japanese_learning < sql/init_tables.sql
 
       - name: 运行测试
-        run: mvn -B test
+        run: ./mvnw -B test
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/japanese_learning?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
           SPRING_DATASOURCE_USERNAME: root
