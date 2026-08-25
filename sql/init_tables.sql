@@ -8,7 +8,7 @@ USE japanese_learning;
 
 -- 0. 用户表（幂等，已存在则跳过）
 CREATE TABLE IF NOT EXISTS user (
-    id         BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
+    id         INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     username   VARCHAR(50)  NOT NULL UNIQUE COMMENT '用户名',
     password   VARCHAR(100) NOT NULL COMMENT '密码(BCrypt加密后)',
     email      VARCHAR(100) NULL COMMENT '邮箱',
