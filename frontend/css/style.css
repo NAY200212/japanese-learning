@@ -1326,7 +1326,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
 .kana-card.done { border-color: var(--ok-line); background: rgba(134,209,140,0.05); }
 .kana-card.done .kana-card-jp { color: var(--ok); text-shadow: 0 0 12px rgba(134,209,140,0.5); }
 .kana-card-mastered { position: absolute; top: 4px; right: 8px; font-size: 9px; color: var(--ok); }
-.kana-card-jp { font-size: 30px; line-height: 1.15; color: #fff; text-shadow: 0 0 14px rgba(255,106,61,0.25); }
+.kana-card-jp { font-size: 30px; line-height: 1.15; color: #fff; text-shadow: 0 0 6px rgba(255,106,61,0.18); }
 .kana-card-kk { font-size: 13px; color: var(--ink-2); }
 .kana-card-rm { font-size: 12px; letter-spacing: 0.08em; color: var(--accent-2); text-transform: lowercase; }
 .kana-card-ex { margin-top: 4px; font-size: 11px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 92%; }

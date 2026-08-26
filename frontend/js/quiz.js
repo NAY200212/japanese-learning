@@ -7,6 +7,27 @@ let quizLocked = false;
 let quizLevel = 'N5';
 let quizMode = 'practice'; // practice 练习 / exam 模拟考试
 
+// Fisher-Yates 随机打乱（选项顺序随机，正确答案不再固定左侧）
+function shuffleOptions(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// 拉取当前等级总页数，更新页码输入框上限与提示
+async function loadQuizPageTotal(el) {
+  try {
+    const page = await api(`/question/page?level=${quizLevel}&page=1&size=10`);
+    const tp = (page && page.totalPages) || 1;
+    const totalEl = el.querySelector('#quizPageTotal');
+    const input = el.querySelector('#quizPageInput');
+    if (totalEl) totalEl.textContent = `/ 共 ${tp} 页`;
+    if (input) input.max = tp;
+  } catch (e) { /* 静默降级 */ }
+}
+
 async function renderQuiz() {
   const el = document.getElementById('quiz');
 
@@ -24,6 +45,12 @@ async function renderQuiz() {
         <div class="seg" style="margin-bottom:24px">
           ${['N5', 'N4', 'N3', 'N2', 'N1'].map((l) => `<button class="tab ${quizLevel === l ? 'active' : ''}" data-level="${l}">${l}</button>`).join('')}
         </div>
+        <div class="quiz-prompt" id="quizPagePrompt" style="${quizMode === 'practice' ? '' : 'display:none'}">页码</div>
+        <div class="seg quiz-page-row" style="margin-bottom:24px;${quizMode === 'practice' ? '' : 'display:none'}">
+          <input type="number" id="quizPageInput" min="1" value="1"
+            style="width:90px;padding:8px 10px;background:rgba(18,25,34,.7);border:1px solid var(--line-hi);border-radius:2px;color:#fff;font-size:14px;">
+          <span id="quizPageTotal" class="card-note" style="margin-left:10px">/ 共 ? 页</span>
+        </div>
         <button class="quiz-next" id="startQuizBtn">开始答题</button>
       </div>
     `;
@@ -33,22 +60,34 @@ async function renderQuiz() {
     el.querySelectorAll('.seg [data-level]').forEach((btn) => {
       btn.addEventListener('click', () => { quizLevel = btn.dataset.level; renderQuiz(); });
     });
+    if (quizMode === 'practice') loadQuizPageTotal(el);
     el.querySelector('#startQuizBtn').addEventListener('click', async () => {
       try {
+        // 先读取页码（下方会替换掉输入框 DOM）
+        let pageNo = 1;
+        if (quizMode === 'practice') {
+          const input = el.querySelector('#quizPageInput');
+          if (input) {
+            pageNo = parseInt(input.value, 10);
+            if (!pageNo || pageNo < 1) pageNo = 1;
+          }
+        }
         el.querySelector('.quiz-box').innerHTML = `<div class="quiz-prompt">出题中…</div>`;
         let list;
         if (quizMode === 'exam') {
           list = await api(`/question/random?level=${quizLevel}&count=10`);
         } else {
-          const page = await api(`/question/page?level=${quizLevel}&page=1&size=10`);
+          const page = await api(`/question/page?level=${quizLevel}&page=${pageNo}&size=10`);
           list = page.list || [];
         }
         if (!list.length) {
-          el.querySelector('.quiz-box').innerHTML = `<div class="quiz-prompt">该等级暂无题目，去题库补充吧</div>`;
+          el.querySelector('.quiz-box').innerHTML = `<div class="quiz-prompt">该页暂无题目，试试其他页码</div>`;
           return;
         }
         // 逐题拉详情（带选项）
         quizQuestions = await Promise.all(list.map((q) => api(`/question/${q.id}`)));
+        // 选项随机打乱：正确答案不再固定在左侧第一个
+        quizQuestions.forEach((q) => { if (Array.isArray(q.options)) shuffleOptions(q.options); });
         quizIndex = 0;
         quizCorrect = 0;
         renderQuiz();

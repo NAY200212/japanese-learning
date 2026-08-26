@@ -343,13 +343,19 @@ function renderWritePanel() {
   const wrap = document.getElementById('writePanel');
   if (!wrap) return;
 
+  // 重建面板前重置绘制状态，避免旧画布销毁时 pointerup 丢失导致状态卡死
+  writeDrawing = false;
+  if (window.__kanaRafPending) {
+    window.__kanaRafPending = false;
+  }
+
   const autoMode = 'handwriting' in navigator && !!navigator.handwriting;
 
   wrap.innerHTML = `
     <div class="write-panel scanline">
       <div class="write-head">
         <h3 class="card-title">手写练习 <small>HANDWRITING DRILL</small></h3>
-        <span class="write-mode-badge ${autoMode ? 'auto' : 'self'}">识别模式：${autoMode ? '自动识别' : '对照自评'}</span>
+        <span class="write-mode-badge ${autoMode ? 'auto' : 'auto'}">自动判分：${autoMode ? '系统识别' : '本地模板'}</span>
       </div>
 
       <div class="write-controls">
@@ -420,21 +426,23 @@ function renderWritePanel() {
     </div>
   `;
 
-  // 模式 / 题库切换
+  // 模式 / 题库切换：只更新高亮与重新出题，不重建整块 DOM（避免重复初始化与卡顿）
   wrap.querySelectorAll('.write-mode-seg button').forEach((btn) => {
     btn.addEventListener('click', () => {
+      if (writeMode === btn.dataset.mode) return;
       writeMode = btn.dataset.mode;
-      writeCurrent = null;
       writeStrokes = [];
-      renderWritePanel();
+      wrap.querySelectorAll('.write-mode-seg button').forEach((b) => b.classList.toggle('active', b === btn));
+      nextWriteQuestion(wrap);
     });
   });
   wrap.querySelectorAll('.write-pool-seg button').forEach((btn) => {
     btn.addEventListener('click', () => {
+      if (writePool === btn.dataset.pool) return;
       writePool = btn.dataset.pool;
-      writeCurrent = null;
       writeStrokes = [];
-      renderWritePanel();
+      wrap.querySelectorAll('.write-pool-seg button').forEach((b) => b.classList.toggle('active', b === btn));
+      nextWriteQuestion(wrap);
     });
   });
 
@@ -508,6 +516,7 @@ function initWriteBoard(wrap) {
   if (!canvas) return;
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return; // 布局未完成时跳过，避免 0 尺寸画布
   canvas.width = rect.width * dpr;
   canvas.height = rect.height * dpr;
   canvas.style.touchAction = 'none';
@@ -540,7 +549,13 @@ function initWriteBoard(wrap) {
     const st = writeStrokes[writeStrokes.length - 1];
     const p = getPos(e);
     st.points.push({ x: p.x, y: p.y, t: performance.now() });
-    drawWriteCanvas(wrap, true);
+    // RAF 节流：高频 pointermove 只保留每帧最后一次重绘，避免主线程过载
+    if (window.__kanaRafPending) return;
+    window.__kanaRafPending = true;
+    requestAnimationFrame(() => {
+      window.__kanaRafPending = false;
+      drawWriteCanvas(wrap, true);
+    });
   });
 
   const endStroke = (e) => {
@@ -591,18 +606,24 @@ function initWriteBoard(wrap) {
     updateWriteStats(wrap);
   });
 
-  // 窗口尺寸变化时重建画布
-  window.addEventListener('resize', () => {
-    if (!document.getElementById('writeCanvas')) return;
-    const c = document.getElementById('writeCanvas');
-    const r = c.getBoundingClientRect();
-    c.width = r.width * dpr;
-    c.height = r.height * dpr;
-    const ctx2 = c.getContext('2d');
-    ctx2.scale(dpr, dpr);
-    c.__ctx = ctx2;
-    drawWriteCanvas();
-  });
+  // 窗口尺寸变化时重建画布：只注册一次（守卫标志），
+  // 避免 renderWritePanel / renderKana 反复重建后监听器无限累积导致卡顿
+  if (!window.__kanaResizeBound) {
+    window.__kanaResizeBound = true;
+    window.addEventListener('resize', () => {
+      const c = document.getElementById('writeCanvas');
+      if (!c) return;
+      const r = c.getBoundingClientRect();
+      if (r.width <= 0 || r.height <= 0) return;
+      const dprNow = window.devicePixelRatio || 1;
+      c.width = r.width * dprNow;
+      c.height = r.height * dprNow;
+      const ctx2 = c.getContext('2d');
+      ctx2.scale(dprNow, dprNow);
+      c.__ctx = ctx2;
+      drawWriteCanvas();
+    });
+  }
 }
 
 // 绘制画布：底稿（临摹模式）+ 笔迹
@@ -614,6 +635,28 @@ function drawWriteCanvas(wrap, incremental) {
   const ctx = canvas.__ctx;
   const rect = canvas.getBoundingClientRect();
   const W = rect.width, H = rect.height;
+
+  // 增量绘制：只画当前笔画新增的一段，跳过清屏与底稿（旧内容已画过）
+  if (incremental && writeStrokes.length > 0) {
+    const st = writeStrokes[writeStrokes.length - 1];
+    // 从 start-1 开始画，补齐上一帧末尾到本帧起点的连接段，避免笔画断裂
+    const start = Math.max(0, (st.drawnPoints || 0) - 1);
+    if (start < st.points.length) {
+      ctx.save();
+      ctx.strokeStyle = st.color;
+      ctx.lineWidth = st.width;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(st.points[start].x, st.points[start].y);
+      for (let i = start + 1; i < st.points.length; i++) ctx.lineTo(st.points[i].x, st.points[i].y);
+      ctx.stroke();
+      ctx.restore();
+      st.drawnPoints = st.points.length;
+    }
+    return;
+  }
+
   ctx.clearRect(0, 0, W, H);
 
   // 十字参考线
@@ -648,10 +691,175 @@ function drawWriteCanvas(wrap, incremental) {
     for (let i = 1; i < st.points.length; i++) ctx.lineTo(st.points[i].x, st.points[i].y);
     ctx.stroke();
     ctx.restore();
+    // 全量重绘后同步增量游标，保证后续增量绘制起点正确
+    st.drawnPoints = st.points.length;
   });
 }
 
 // ===== 判分 =====
+// ---- 本地模板匹配自动判分（不依赖浏览器 handwriting API，Chrome/Safari 均可用）----
+const KANA_TPL_SIZE = 96;
+const kanaTplCache = new Map();
+
+// 用系统字体在离屏画布渲染假名，生成二值模板（raw=原始笔画，mask=膨胀1圈容错）
+// 模板采用描边渲染 + bbox 归一化，与用户笔迹表示同构（线条对线条）
+function getKanaTemplateBitmap(ch) {
+  if (kanaTplCache.has(ch)) return kanaTplCache.get(ch);
+  const S = KANA_TPL_SIZE;
+  const font = '700 ' + Math.round(S * 0.74) + 'px "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif';
+
+  // 第一遍：填充渲染量出字形 bbox
+  const c1 = document.createElement('canvas');
+  c1.width = S; c1.height = S;
+  const ctx1 = c1.getContext('2d', { willReadFrequently: true });
+  ctx1.font = font;
+  ctx1.textAlign = 'center';
+  ctx1.textBaseline = 'middle';
+  ctx1.fillStyle = '#000';
+  ctx1.fillText(ch, S / 2, S / 2 + S * 0.02);
+  const img1 = ctx1.getImageData(0, 0, S, S);
+  let minX = S, minY = S, maxX = -1, maxY = -1;
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      if (img1.data[(y * S + x) * 4 + 3] > 60) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) { minX = 0; minY = 0; maxX = S - 1; maxY = S - 1; }
+  const bw = Math.max(1, maxX - minX + 1);
+  const bh = Math.max(1, maxY - minY + 1);
+
+  // 第二遍：描边渲染字形（与用户笔迹同为线条，线宽一致）
+  const c2 = document.createElement('canvas');
+  c2.width = S; c2.height = S;
+  const ctx2 = c2.getContext('2d', { willReadFrequently: true });
+  ctx2.font = font;
+  ctx2.textAlign = 'center';
+  ctx2.textBaseline = 'middle';
+  ctx2.strokeStyle = '#000';
+  ctx2.lineWidth = Math.max(3, S * 0.055);
+  ctx2.lineCap = 'round';
+  ctx2.lineJoin = 'round';
+  ctx2.strokeText(ch, S / 2, S / 2 + S * 0.02);
+
+  // 裁剪字形并归一化到 0.62*S 居中（与用户笔迹 bbox 归一化一致）
+  const out = document.createElement('canvas');
+  out.width = S; out.height = S;
+  const octx = out.getContext('2d');
+  const target = Math.round(S * 0.62);
+  const scale = target / Math.max(bw, bh);
+  const dw = Math.max(1, Math.round(bw * scale));
+  const dh = Math.max(1, Math.round(bh * scale));
+  octx.drawImage(c2, minX, minY, bw, bh, Math.round((S - dw) / 2), Math.round((S - dh) / 2), dw, dh);
+
+  const img = octx.getImageData(0, 0, S, S);
+  const raw = new Uint8Array(S * S);
+  for (let i = 0; i < raw.length; i++) {
+    if (img.data[i * 4 + 3] > 60 && img.data[i * 4] + img.data[i * 4 + 1] + img.data[i * 4 + 2] < 500) raw[i] = 1;
+  }
+  const mask = new Uint8Array(raw.length);
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      if (raw[y * S + x]) {
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            const nx = x + dx, ny = y + dy;
+            if (nx >= 0 && ny >= 0 && nx < S && ny < S) mask[ny * S + nx] = 1;
+          }
+        }
+      }
+    }
+  }
+  kanaTplCache.set(ch, { raw, mask });
+  return kanaTplCache.get(ch);
+}
+
+// 把用户笔迹平移+缩放归一化到模板画布，返回二值 mask
+function renderUserStrokesBitmap(wrap) {
+  const canvas = wrap.querySelector('#writeCanvas');
+  if (!canvas) return null;
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width || 1, H = rect.height || 1;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const strokes = [];
+  for (const st of writeStrokes) {
+    if (!st.points.length) continue;
+    const pts = [];
+    for (const p of st.points) {
+      if (p.x < minX) minX = p.x;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.y > maxY) maxY = p.y;
+      pts.push({ x: p.x, y: p.y });
+    }
+    strokes.push(pts);
+  }
+  if (!strokes.length || !isFinite(minX)) return null;
+  const bw = Math.max(1, maxX - minX);
+  const bh = Math.max(1, maxY - minY);
+  const S = KANA_TPL_SIZE;
+  const scale = (S * 0.62) / Math.max(bw, bh);
+  const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+
+  const c = document.createElement('canvas');
+  c.width = S; c.height = S;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = Math.max(3, S * 0.055);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  for (const pts of strokes) {
+    ctx.beginPath();
+    ctx.moveTo(S / 2 + (pts[0].x - cx) * scale, S / 2 + (pts[0].y - cy) * scale);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(S / 2 + (pts[i].x - cx) * scale, S / 2 + (pts[i].y - cy) * scale);
+    ctx.stroke();
+  }
+  const img = ctx.getImageData(0, 0, S, S);
+  const mask = new Uint8Array(S * S);
+  for (let i = 0; i < mask.length; i++) {
+    if (img.data[i * 4 + 3] > 60 && img.data[i * 4] + img.data[i * 4 + 1] + img.data[i * 4 + 2] < 500) mask[i] = 1;
+  }
+  return mask;
+}
+
+// 双向命中率评分：hitU=用户笔迹落在模板膨胀区的比例（容错），hitT=模板被用户精确覆盖的比例（区分）
+function matchKanaScore(userMask, ch) {
+  const tpl = getKanaTemplateBitmap(ch);
+  const S = KANA_TPL_SIZE;
+  let userTotal = 0, tplTotal = 0, interE = 0, interR = 0;
+  for (let i = 0; i < S * S; i++) {
+    if (userMask[i]) {
+      userTotal++;
+      if (tpl.mask[i]) interE++;
+      if (tpl.raw[i]) interR++;
+    }
+    if (tpl.raw[i]) tplTotal++;
+  }
+  const hitU = userTotal ? interE / userTotal : 0;
+  const hitT = tplTotal ? interR / tplTotal : 0;
+  // hitT 为区分项（用户是否覆盖了模板全部笔画），权重更高；hitU 用膨胀 mask 容错轻微偏移
+  return { score: 0.3 * hitU + 0.7 * hitT, hitU, hitT };
+}
+
+// 多候选识别：优先在笔画数匹配的假名中选最高分（形近字笔画数往往不同，可排除），分数过低时回退全量最优
+function bestKanaMatch(userMask, strokeCount) {
+  let best = null, fallback = null;
+  for (const d of KANA_DATA) {
+    const s = matchKanaScore(userMask, d.h);
+    const item = { ch: d.h, sc: d.sc, score: s.score, hitU: s.hitU, hitT: s.hitT };
+    if (strokeCount && d.sc === strokeCount) {
+      if (!best || s.score > best.score) best = item;
+    } else if (!fallback || s.score > fallback.score) {
+      fallback = item;
+    }
+  }
+  return best && best.score >= 0.30 ? best : (fallback || best);
+}
+
 async function submitWrite(wrap) {
   if (!wrap) wrap = document.getElementById('writePanel');
   if (!wrap) return;
@@ -702,26 +910,79 @@ async function submitWrite(wrap) {
   }
 
   const target = normAnswer(answer);
-  const isMatch = recognized !== null && normAnswer(recognized) === target;
 
-  if (usedAuto && recognized !== null) {
-    // 自动识别成功
+  // 2) 单词模式：多字组合不做模板匹配，无 handwriting 时维持「对照自评」
+  if (writeCurrent.type === 'word') {
+    const wMatch = usedAuto && recognized !== null && normAnswer(recognized) === target;
     writeStats.total += 1;
-    if (isMatch) writeStats.correct += 1;
     updateWriteStats(wrap);
-    fb.className = 'write-feedback ' + (isMatch ? 'ok' : 'bad');
-    fb.innerHTML = isMatch
-      ? `识别「${recognized}」— 正确！`
-      : `识别「${recognized}」— 不对。正确答案是 <b>${answer}</b>`;
+    if (usedAuto && recognized !== null) {
+      if (wMatch) writeStats.correct += 1;
+      fb.className = 'write-feedback ' + (wMatch ? 'ok' : 'bad');
+      fb.innerHTML = wMatch
+        ? `识别「${recognized}」— 正确！`
+        : `识别「${recognized}」— 不对。正确答案是 <b>${answer}</b>`;
+      return;
+    }
+    fb.className = 'write-feedback self';
+    fb.innerHTML = `
+      <div class="self-answer">正确答案：<b>${answer}</b></div>
+      <div class="self-btns">
+        <button class="btn-primary self-ok">写对了</button>
+        <button class="btn-ghost self-no">写错了</button>
+      </div>`;
+    fb.querySelector('.self-ok').addEventListener('click', () => {
+      writeStats.correct += 1;
+      updateWriteStats(wrap);
+      fb.className = 'write-feedback ok';
+      fb.innerHTML = '已记录为正确。';
+    });
+    fb.querySelector('.self-no').addEventListener('click', () => {
+      fb.className = 'write-feedback bad';
+      fb.innerHTML = '已记录为错误。多练几次就记住了。';
+    });
     return;
   }
 
-  // 2) 降级：对照自评
+  // 3) 假名模式：handwriting 优先；不可用/失败时用本地模板匹配自动判分（Safari 同样生效）
+  const userMask = renderUserStrokesBitmap(wrap);
+
   writeStats.total += 1;
   updateWriteStats(wrap);
+
+  if (usedAuto && recognized !== null) {
+    const isMatch = normAnswer(recognized) === target;
+    if (isMatch) {
+      writeStats.correct += 1;
+      updateWriteStats(wrap);
+    }
+    fb.className = 'write-feedback ' + (isMatch ? 'ok' : 'bad');
+    fb.innerHTML = isMatch
+      ? `识别「${recognized}」— 正确！`
+      : `识别「${recognized}」— 不对。正确答案是 <b>${answer}</b>（${writeCurrent.k}）`;
+    return;
+  }
+
+  if (userMask) {
+    const best = bestKanaMatch(userMask, writeStrokes.length);
+    if (best) {
+      const ok = normAnswer(best.ch) === target && best.score >= 0.40 && best.hitT >= 0.18;
+      if (ok) {
+        writeStats.correct += 1;
+        updateWriteStats(wrap);
+      }
+      fb.className = 'write-feedback ' + (ok ? 'ok' : 'bad');
+      fb.innerHTML = ok
+        ? `识别为「${best.ch}」，匹配度 ${Math.round(best.score * 100)}% — 正确！`
+        : `识别为「${best.ch}」，匹配度 ${Math.round(best.score * 100)}% — 不对。正确答案是 <b>${answer}</b>（${writeCurrent.k}）`;
+      return;
+    }
+  }
+
+  // 4) 兜底：对照自评
   fb.className = 'write-feedback self';
   fb.innerHTML = `
-    <div class="self-answer">正确答案：<b>${answer}</b>${writeCurrent.type === 'kana' ? '（' + writeCurrent.k + '）' : ''}</div>
+    <div class="self-answer">正确答案：<b>${answer}</b>（${writeCurrent.k}）</div>
     <div class="self-btns">
       <button class="btn-primary self-ok">写对了</button>
       <button class="btn-ghost self-no">写错了</button>
