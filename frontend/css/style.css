@@ -1498,3 +1498,28 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
 .wrong-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .wrong-time { font-size: 12px; color: var(--ink-3); }
 .wrong-master { font-size: 13px; padding: 8px 18px; }
+
+/* 间隔重复背词 SRS */
+.srs-btn {
+  padding: 9px 16px; border: 1px solid var(--accent-line);
+  background: rgba(255,106,61,0.08); color: var(--accent-1);
+  font-size: 13px; letter-spacing: 0.08em; cursor: pointer;
+  transition: all 0.2s ease; white-space: nowrap;
+}
+.srs-btn:hover { background: rgba(255,106,61,0.18); box-shadow: 0 0 14px rgba(255,106,61,0.25); }
+.srs-btn span { opacity: 0.8; margin-left: 6px; font-size: 12px; }
+
+.srs-card { cursor: default; padding: 26px 24px; }
+.srs-progress {
+  font-size: 12px; color: var(--ink-3); letter-spacing: 0.12em;
+  margin-bottom: 14px; text-transform: uppercase;
+}
+.srs-front { text-align: center; padding: 26px 10px; cursor: pointer; border: 1px dashed rgba(255,106,61,0.25); border-radius: 8px; transition: all 0.2s ease; }
+.srs-front:hover { border-color: rgba(255,106,61,0.6); background: rgba(255,106,61,0.05); }
+.srs-front .word-jp { font-size: 44px; }
+.srs-front .word-kana { font-size: 20px; margin-top: 10px; }
+.srs-hint { margin-top: 18px; font-size: 12px; color: var(--ink-3); letter-spacing: 0.1em; }
+.srs-back { text-align: center; padding: 22px 10px 6px; }
+.srs-back .word-meaning { font-size: 20px; color: #fff; letter-spacing: 0.04em; }
+.srs-btns { display: flex; justify-content: center; gap: 14px; margin-top: 22px; }
+.srs-btns .mark-btn { min-width: 92px; padding: 11px 0; font-size: 14px; }

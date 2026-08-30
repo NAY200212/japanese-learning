@@ -2,6 +2,7 @@ package com.japaneselearning.service.impl;
 
 import com.japaneselearning.entity.Kana;
 import com.japaneselearning.service.KanaService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public class KanaServiceImpl implements KanaService {
     }
 
     @Override
+    @Cacheable(cacheNames = "kana:all", key = "'all'")
     public List<Kana> getAll() {
         return KANA_LIST;
     }

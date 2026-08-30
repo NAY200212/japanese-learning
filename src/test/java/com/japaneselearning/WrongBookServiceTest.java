@@ -33,8 +33,8 @@ public class WrongBookServiceTest {
         wb2.setId(2);
         wb2.setQuestionId(8);
 
-        // 2. mock：当 mapper.listByUser(1) 被调用时返回这 2 条
-        when(wrongBookMapper.listByUser(1)).thenReturn(Arrays.asList(wb1, wb2));
+        // 2. mock：当 mapper.listByUserPage(1, 0, MAX) 被调用时返回这 2 条
+        when(wrongBookMapper.listByUserPage(1, 0, Integer.MAX_VALUE)).thenReturn(Arrays.asList(wb1, wb2));
 
         // 3. 执行
         List<WrongBook> list = wrongBookService.listByUser(1);
@@ -43,7 +43,7 @@ public class WrongBookServiceTest {
         assertEquals(2, list.size());
         assertEquals(5, list.get(0).getQuestionId());
         // 5. 验证 mapper 恰好被调用一次
-        verify(wrongBookMapper, times(1)).listByUser(1);
+        verify(wrongBookMapper, times(1)).listByUserPage(1, 0, Integer.MAX_VALUE);
     }
 
 

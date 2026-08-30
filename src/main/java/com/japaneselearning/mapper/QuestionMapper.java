@@ -43,6 +43,10 @@ public interface QuestionMapper {
     List<Question> findRandom(@Param("level") String level,
                               @Param("count") int count);
 
+    // 查某等级全部题目（模拟考试判分用）
+    @Select("SELECT * FROM question WHERE level = #{level}")
+    List<Question> findAllByLevel(@Param("level") String level);
+
     @Select("SELECT * FROM question WHERE id = #{id}")
     Question findById(@Param("id") Integer id);
 

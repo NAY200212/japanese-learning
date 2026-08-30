@@ -20,7 +20,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/user/me", "/api/word/memory", "/api/word/memory/list")   // 保护：这些接口要验 token
                 .excludePathPatterns("/api/user/register", "/api/user/login") // 排除：注册登录不验
                 .addPathPatterns("/api/checkin/**", "/api/kana/progress", "/api/dashboard/**")
-                .addPathPatterns("/api/record/**", "/api/wrong/**");
+                .addPathPatterns("/api/record/**", "/api/wrong/**")
+                .addPathPatterns("/api/exam/**")
+                .addPathPatterns("/api/review/**");
 
 
     }

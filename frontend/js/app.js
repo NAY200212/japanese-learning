@@ -1,5 +1,5 @@
 // 主框架：导航路由 + 仪表盘
-const PAGES = ['dashboard', 'kana', 'quiz', 'wrong', 'word', 'checkin'];
+const PAGES = ['dashboard', 'kana', 'quiz', 'exam', 'wrong', 'word', 'checkin'];
 
 function showPage(name) {
   PAGES.forEach((p) => {
@@ -12,6 +12,7 @@ function showPage(name) {
   if (name === 'dashboard') renderDashboard();
   if (name === 'kana') renderKana();
   if (name === 'quiz') renderQuiz();
+  if (name === 'exam') renderExam();
   if (name === 'word') renderWord();
   if (name === 'checkin') renderCheckin();
   if (name === 'wrong') renderWrong();

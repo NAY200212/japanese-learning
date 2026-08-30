@@ -1,5 +1,6 @@
 package com.japaneselearning.controller;
 
+import com.japaneselearning.common.PageResult;
 import com.japaneselearning.common.Result;
 import com.japaneselearning.entity.WrongBook;
 import com.japaneselearning.service.WrongBookService;
@@ -20,9 +21,11 @@ public class WrongBookController {
     private WrongBookService wrongBookService;
 
     @GetMapping("/list")
-    @Operation(summary = "错题列表（待复习）")
-    public Result<List<WrongBook>> list(@RequestAttribute("userId") Integer userId) {
-        return Result.success(wrongBookService.listByUser(userId));
+    @Operation(summary = "分页查错题列表（待复习）")
+    public Result<PageResult<WrongBook>> list(@RequestAttribute("userId") Integer userId,
+                                              @RequestParam(defaultValue = "1") int page,
+                                              @RequestParam(defaultValue = "10") int size) {
+        return Result.success(wrongBookService.pageByUser(userId, page, size));
     }
 
     @PostMapping("/master")

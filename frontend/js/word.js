@@ -54,6 +54,7 @@ async function renderWord() {
           `<button data-level="${lv}" class="${wordLevel === lv ? 'active' : ''}">${levelLabel(lv)}</button>`
         ).join('')}
       </div>
+      <button class="srs-btn" id="srsBtn">SRS 到期复习 <span id="srsDue">…</span></button>
       <span class="card-note">标记熟悉 / 模糊 / 陌生，记录保存到服务器</span>
     </div>
     <div class="word-list" id="wordList">
@@ -71,12 +72,102 @@ async function renderWord() {
     });
   });
 
+  // SRS 到期复习入口
+  el.querySelector('#srsBtn').addEventListener('click', () => enterSRS(el));
+
   try {
-    await Promise.all([loadWordMarks(), loadWords()]);
+    await Promise.all([loadWordMarks(), loadWords(), loadSrsDueCount()]);
     renderWordList(el);
   } catch (e) {
     el.querySelector('#wordList').innerHTML = `<p class="card-note">加载失败：${e.message}</p>`;
   }
+}
+
+// 加载 SRS 待复习数显示在按钮上
+async function loadSrsDueCount() {
+  const btn = document.getElementById('srsDue');
+  if (!btn) return;
+  try {
+    const s = await api('/review/stats');
+    btn.textContent = `待复习 ${s.dueCount || 0}`;
+  } catch (e) {
+    btn.textContent = '不可用';
+  }
+}
+
+// 进入 SRS 复习模式：拉到期队列逐词翻卡
+let srsQueue = [];
+let srsIndex = 0;
+
+async function enterSRS(el) {
+  try {
+    const due = await api('/review/due?limit=20');
+    srsQueue = due || [];
+    srsIndex = 0;
+    if (srsQueue.length === 0) {
+      el.querySelector('#wordList').innerHTML = `<p class="card-note">今天没有到期的单词，休息一下或去背新词。</p>`;
+      el.querySelector('#wordPager').innerHTML = '';
+      loadSrsDueCount();
+      return;
+    }
+    el.querySelector('#wordPager').innerHTML = '';
+    renderSrsCard(el);
+  } catch (e) {
+    el.querySelector('#wordList').innerHTML = `<p class="card-note">复习队列加载失败：${e.message}</p>`;
+  }
+}
+
+function renderSrsCard(el) {
+  const item = srsQueue[srsIndex];
+  const wrap = el.querySelector('#wordList');
+  wrap.innerHTML = `
+    <div class="word-card srs-card" data-card="${item.wordId}">
+      <div class="srs-progress">${srsIndex + 1} / ${srsQueue.length} · 连续答对 ${item.repetitions || 0} 次</div>
+      <div class="srs-front">
+        <div class="word-jp">${item.word}</div>
+        <div class="word-kana">${item.kana || ''}</div>
+        <div class="srs-hint">点击卡片查看释义</div>
+      </div>
+      <div class="srs-back hidden">
+        <div class="word-meaning">${item.meaning || ''}</div>
+        <div class="word-tags">${item.level || ''}</div>
+      </div>
+      <div class="mark-btns srs-btns">
+        <button class="mark-btn strange" data-result="0">忘记</button>
+        <button class="mark-btn vague" data-result="2">模糊</button>
+        <button class="mark-btn familiar" data-result="1">记得</button>
+      </div>
+    </div>`;
+
+  // 点击翻面
+  const front = wrap.querySelector('.srs-front');
+  front.addEventListener('click', () => {
+    wrap.querySelector('.srs-back').classList.toggle('hidden');
+    wrap.querySelector('.srs-hint').classList.toggle('hidden');
+  });
+
+  // 三按钮提交结果
+  wrap.querySelectorAll('.srs-btns button').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      try {
+        await api('/review/submit', {
+          method: 'POST',
+          body: JSON.stringify({ wordId: item.wordId, result: Number(btn.dataset.result) }),
+        });
+        srsIndex++;
+        if (srsIndex >= srsQueue.length) {
+          wrap.innerHTML = `<p class="card-note">今日复习完成！共复习 ${srsQueue.length} 个单词。</p>`;
+          loadSrsDueCount();
+        } else {
+          renderSrsCard(el);
+        }
+      } catch (e) {
+        btn.disabled = false;
+        wrap.querySelector('.srs-hint').textContent = '提交失败：' + e.message;
+      }
+    });
+  });
 }
 
 function renderWordList(el) {

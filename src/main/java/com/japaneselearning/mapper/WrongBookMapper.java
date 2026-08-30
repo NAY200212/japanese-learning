@@ -29,8 +29,9 @@ public interface WrongBookMapper {
             "q.content AS question_content, q.type AS question_type, q.level AS question_level " +
             "FROM wrong_book wb JOIN question q ON wb.question_id = q.id " +
             "WHERE wb.user_id = #{userId} AND wb.status = '待复习' " +
-            "ORDER BY wb.last_wrong_at DESC")
-    List<WrongBook> listByUser(@Param("userId") Integer userId);
+            "ORDER BY wb.last_wrong_at DESC " +
+            "LIMIT #{offset}, #{size}")
+    List<WrongBook> listByUserPage(@Param("userId") Integer userId, @Param("offset") int offset, @Param("size") int size);
 
     // 标记已掌握
     @Update("UPDATE wrong_book SET status = '已掌握' WHERE user_id = #{userId} AND question_id = #{questionId}")

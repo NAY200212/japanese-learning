@@ -6,6 +6,8 @@ import com.japaneselearning.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.japaneselearning.exception.BusinessException;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,7 +22,7 @@ public class UserServiceImpl implements UserService {
     public boolean register(String username, String password, String email) {
         // 1. 先查用户名是否已存在
         if (userMapper.findByUsername(username) != null) {
-            return false;  // 用户名被占用
+            throw new BusinessException("用户名已存在");  // 用户名被占用
         }
         // 2. 密码加密后再存
         User user = new User();
