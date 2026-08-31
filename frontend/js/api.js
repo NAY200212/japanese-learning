@@ -1,5 +1,5 @@
-// 后端接口地址
-const API = 'http://localhost:8080/api';
+// 后端接口地址（云端部署时改为公网地址；本地开发可改回 http://localhost:8080/api）
+const API = 'https://2b620b9a3e6ab4.lhr.life/api';
 
 // token / 用户名存在 localStorage，之后所有请求自动带 Authorization 头
 const TOKEN_KEY = 'kotoba_token';
