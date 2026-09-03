@@ -151,6 +151,15 @@
 				<enabled>false</enabled>
 			</releases>
 		</repository>
+		<!-- spring-ai 1.0.0-M6 发布于 Spring Milestones 仓库，GitHub Actions 全新环境必须显式声明才能解析依赖 -->
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
