@@ -11,7 +11,7 @@ AIGC:
 
 # 日本語学習プラットフォーム（Japanese Learning Platform）
 
-一个面向 JLPT（N3–N5）备考的**前后端分离日语学习平台**，集背单词、五十音练习、模拟测验、真题练习、错题本、每日打卡、SRS 间隔复习、学习统计于一体。后端使用 Spring Boot 3 + MyBatis + MySQL/TiDB + Redis，前端为原生 HTML/CSS/JavaScript，支持 Docker Compose 一键启动。
+一个面向 JLPT（N3–N5）备考的**前后端分离日语学习平台**，集背单词、五十音练习、模拟测验、真题练习、错题本、每日打卡、SRS 间隔复习、学习统计于一体，并内置 **AI 日语助教**（DeepSeek：错题解析、单词例句、语法问答、多轮记忆流式对话）。后端使用 Spring Boot 3 + MyBatis + MySQL/TiDB + Redis，前端为原生 HTML/CSS/JavaScript，支持 Docker Compose 一键启动。
 
 > 本项目为 **Java 后端工程师求职作品**，重点展示：后端分层架构、RESTful API 设计、JWT 认证、Redis 缓存、SRS 算法实现、定时任务、Docker 部署与云数据库接入等能力。
 
@@ -30,6 +30,7 @@ AIGC:
 | 每日打卡 | 学习打卡，记录连续天数 |
 | SRS 复习 | 基于 **SM-2 间隔重复算法**的背词复习，按遗忘曲线安排复习 |
 | 每日统计 | 定时任务聚合每日学习数据，趋势图展示 |
+| AI 助教 | 集成 **DeepSeek（Spring AI / OpenAI 兼容协议）**：错题解析、单词例句、语法问答；连续对话支持 **SSE 流式打字机输出 + Redis 多轮记忆（约 10 轮 / 7 天）** |
 
 ## 🛠 技术栈
 
@@ -37,7 +38,10 @@ AIGC:
 - **Spring Boot 3.4.1**（Java 17）— Web 应用框架，自动装配与 Starter 生态
 - **MyBatis 3.0.4** — 持久层框架，XML/注解 SQL 映射，`#{}` 预编译防注入
 - **MySQL 8 / TiDB Cloud Serverless** — 业务数据库（本地 Docker / 云端兼容）
-- **Redis 7 / Upstash Redis** — 缓存与在线状态（`word:*` 缓存系列）
+- **Redis 7 / Upstash Redis** — 缓存与在线状态（`word:*` 缓存系列、AI 多轮记忆与问答缓存）
+- **Spring AI（openai starter 1.0.0-M6）** — 统一大模型调用抽象，经 OpenAI 兼容协议接入 DeepSeek
+- **DeepSeek（deepseek-chat）** — AI 对话模型，`ChatModel.stream` SSE 流式输出
+- **SseEmitter + Reactor** — 流式响应推送与取消订阅管理
 - **JJWT 0.12.6** — 无状态登录态（JWT 签发与校验）
 - **Spring Security Crypto** — BCrypt 密码哈希
 - **springdoc-openapi 2.8.9** — Swagger UI / OpenAPI 文档（`/doc.html`）
@@ -64,14 +68,21 @@ AIGC:
 │  frontend/ (HTML/JS)     │  HTTP  │ Spring Boot 3.4.1        │
 │  · index.html 登录页      │ ─────► │  Controller → Service    │
 │  · app.html   主应用      │  /api  │  → Mapper → MySQL/TiDB   │
-│  · js/ 9个模块文件        │        │  JWT 拦截器 · Redis 缓存  │
+│  · js/ 10个模块文件       │        │  JWT 拦截器 · Redis 缓存  │
 └─────────────────────────┘        └────────────┬─────────────┘
                                                 │
                                     ┌───────────┴───────────┐
                                     │ MySQL 8 (本地 Docker)  │
                                     │ TiDB Cloud (云端备选)  │
                                     │ Redis 7 (缓存/在线)    │
-                                    └───────────────────────┘
+                                    └──────────┬────────────┘
+                                               │
+                                               │ Spring AI (OpenAI 兼容协议)
+                                               ▼
+                              ┌──────────────────────────┐
+                              │ DeepSeek API（外部模型）   │
+                              │ https://api.deepseek.com  │
+                              └──────────────────────────┘
 ```
 
 **请求链路**：浏览器 → 前端静态页 → `fetch(/api/...)` → Spring Boot（JwtInterceptor 鉴权）→ Service 业务逻辑 → MyBatis Mapper → MySQL/TiDB；热点数据走 Redis 缓存（`word:*`）。
@@ -131,6 +142,7 @@ cd frontend && python3 -m http.server 3000
 | `REDIS_PORT` | Redis 端口 | `6379` |
 | `REDIS_PASSWORD` | Redis 密码 | `your-password` |
 | `REDIS_SSL` | 是否启用 Redis TLS | `true` |
+| `DEEPSEEK_API_KEY` | DeepSeek API Key（AI 助教必需，仅从环境变量读取，不入库） | `sk-...` |
 
 本地默认值（docker-compose）：MySQL `localhost:3308`、Redis `localhost:6380`。
 
@@ -139,8 +151,8 @@ cd frontend && python3 -m http.server 3000
 ```
 japanese-learning/
 ├── src/main/java/com/japaneselearning/
-│   ├── controller/     # 11 个 REST 控制器
-│   ├── service/        # 业务层接口 + impl（含 SM-2 复习调度）
+│   ├── controller/     # 12 个 REST 控制器（含 AiController）
+│   ├── service/        # 业务层接口 + impl（含 SM-2、AiService / AiChatService）
 │   ├── mapper/         # MyBatis Mapper（13 个）
 │   ├── entity/         # 实体类（13 个，对应 14 张表）
 │   ├── dto/            # 请求/响应 DTO
@@ -153,7 +165,7 @@ japanese-learning/
 │   ├── index.html      # 登录页
 │   ├── app.html        # 主应用页
 │   ├── css/style.css
-│   └── js/             # api.js / auth.js / word.js / quiz.js / exam.js / kana.js / checkin.js / wrong.js / app.js
+│   └── js/             # api.js / auth.js / word.js / quiz.js / exam.js / kana.js / checkin.js / wrong.js / ai.js / app.js
 ├── sql/                # 建表 + 种子数据（1377 词 / 120 题）
 ├── docker/             # Docker initdb 脚本
 ├── Dockerfile          # Maven 多阶段构建
@@ -183,6 +195,10 @@ japanese-learning/
 6. **AOP 接口日志**：`@Aspect` 切面记录请求路径、耗时，便于排查与演示。
 7. **每日统计定时任务**：`@Scheduled` 每天聚合学习时长 / 打卡 / 复习数据。
 8. **环境变量化配置**：同一套代码本地 Docker 与云端 TiDB / Upstash 无缝切换。
+9. **Spring AI 统一模型接入**：仅加 `spring-ai-openai-spring-boot-starter` 并将 base-url 指向 DeepSeek（OpenAI 兼容协议），业务层面向 `ChatModel` 编程、不感知具体厂商，后续可平滑切换 GPT / 通义等模型。
+10. **SSE 流式对话**：`SseEmitter` + `ChatModel.stream` 增量推送，前端 `fetch` ReadableStream 解码 + 打字机渲染；超时 / 断连自动 `dispose` 取消订阅防泄漏。
+11. **AI 多轮记忆**：Redis `ai:chat:{sessionId}` 保存最近 20 条（约 10 轮）user/assistant 消息（TTL 7 天）；会话按 JWT userId（登录）或 `X-Chat-Session`（游客）识别，Redis 异常自动降级为无记忆直连。
+12. **AI 问答短缓存**：相同提问结果写 Redis（TTL 10 分钟），重复问题不重复计费；缓存读取失败自动降级直连。
 
 ## 🗺 Roadmap
 
