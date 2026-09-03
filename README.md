@@ -1,3 +1,14 @@
+---
+AIGC:
+    Label: "1"
+    ContentProducer: 001191440300708461136T1XGW3
+    ProduceID: f8f5684a610de3d952eedcce4f3e4d6d_e2946ed7a52e11f1903b525400f8a581
+    ReservedCode1: rpIEUfi6/ISxJ2RbrynfuzGuEN4Lz3OpG6fMfurqM5iCTIYvRarFOQPHj5B6MgFxwEQ2rdkBPRZOyT0dvRjl0VDLaWGZp/BbqIWT8aDT7B5MvkPQe0e5U73Fd+QQMjw7CzsOkOFKnP5GNMBj3FcHUBvBWsLXhHF1CLVfdW+mdD+FBYemL/tpWHOdnR8=
+    ContentPropagator: 001191440300708461136T1XGW3
+    PropagateID: f8f5684a610de3d952eedcce4f3e4d6d_e2946ed7a52e11f1903b525400f8a581
+    ReservedCode2: rpIEUfi6/ISxJ2RbrynfuzGuEN4Lz3OpG6fMfurqM5iCTIYvRarFOQPHj5B6MgFxwEQ2rdkBPRZOyT0dvRjl0VDLaWGZp/BbqIWT8aDT7B5MvkPQe0e5U73Fd+QQMjw7CzsOkOFKnP5GNMBj3FcHUBvBWsLXhHF1CLVfdW+mdD+FBYemL/tpWHOdnR8=
+---
+
 # 日本語学習プラットフォーム（Japanese Learning Platform）
 
 一个面向 JLPT（N3–N5）备考的**前后端分离日语学习平台**，集背单词、五十音练习、模拟测验、真题练习、错题本、每日打卡、SRS 间隔复习、学习统计于一体。后端使用 Spring Boot 3 + MyBatis + MySQL/TiDB + Redis，前端为原生 HTML/CSS/JavaScript，支持 Docker Compose 一键启动。
@@ -183,3 +194,4 @@ japanese-learning/
 ---
 
 MIT License © 2026 [NAY200212](https://github.com/NAY200212)
+*（内容由AI生成，仅供参考）*

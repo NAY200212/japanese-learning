@@ -90,6 +90,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
+		<!-- Spring AI OpenAI 兼容 Starter：1.0.0 GA，适配 Spring Boot 3.4.x；经 OpenAI 兼容协议接入 DeepSeek -->
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+			<version>1.0.0-M6</version>
+		</dependency>
 	</dependencies>
 
 	<build>

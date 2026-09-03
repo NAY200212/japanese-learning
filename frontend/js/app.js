@@ -1,5 +1,5 @@
 // 主框架：导航路由 + 仪表盘
-const PAGES = ['dashboard', 'kana', 'quiz', 'exam', 'wrong', 'word', 'checkin'];
+const PAGES = ['dashboard', 'kana', 'quiz', 'exam', 'wrong', 'word', 'checkin', 'ai'];
 
 function showPage(name) {
   PAGES.forEach((p) => {
@@ -16,6 +16,7 @@ function showPage(name) {
   if (name === 'word') renderWord();
   if (name === 'checkin') renderCheckin();
   if (name === 'wrong') renderWrong();
+  if (name === 'ai') renderAi();
 }
 
 // 路由：hash 变化时切页面
