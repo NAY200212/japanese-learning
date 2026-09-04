@@ -223,4 +223,3 @@ AIGC:
 1. 基于 Spring Boot 3 + MyBatis 实现前后端分离学习平台，14 张表、10+ REST 接口，统一 Result/PageResult 返回体
 2. 实现 SM-2 间隔重复复习算法，按遗忘曲线自动调度复习，支持 1377 词库分级背诵
 3. Docker Compose 一键部署（MySQL/Redis/后端三容器），数据库与缓存可在本地/云端环境变量无缝切换
-*（内容由AI生成，仅供参考）*
