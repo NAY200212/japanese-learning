@@ -210,4 +210,4 @@ japanese-learning/
 ---
 
 MIT License © 2026 [NAY200212](https://github.com/NAY200212)
-*（内容由AI生成，仅供参考）*
+
