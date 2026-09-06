@@ -30,20 +30,20 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * AI 连续对话实现：DeepSeek 流式输出（spring-ai ChatModel.stream），Redis 记录每轮 user/assistant 消息，
- * 下一轮把最近历史作为多轮消息一并提交，实现上下文记忆。Redis 异常自动降级为无记忆直连，不影响使用。
+ * AI 連続対話の実装：DeepSeek のストリーミング出力（spring-ai ChatModel.stream）。Redis に毎回の user/assistant メッセージを記録し、
+ * 次回は直近履歴を多輪メッセージとしてまとめて送信して文脈記憶を実現。Redis 異常時は自動で記憶なしの直結へフォールバックし、利用に影響しない。
  */
 @Slf4j
 @Service
 public class AiChatServiceImpl implements AiChatService {
 
-    /** 历史键前缀：ai:chat:{sessionId} */
+    /*履歴キーのプレフィックス：ai:chat:{sessionId} */
     private static final String HISTORY_PREFIX = "ai:chat:";
 
-    /** 最多保留消息条数（约 10 轮） */
+    /*保持する最大メッセージ数（約 10 ターン） */
     private static final int MAX_HISTORY_MESSAGES = 20;
 
-    /** 历史 TTL：7 天 */
+    /*履歴の TTL：7 日 */
     private static final Duration HISTORY_TTL = Duration.ofDays(7);
 
     private static final String FRIENDLY_ERR = "AI 服务暂时不可用，请稍后重试";
@@ -79,7 +79,7 @@ public class AiChatServiceImpl implements AiChatService {
 
     @Override
     public SessionInfo resolveSession(String authorizationHeader, String clientSessionId) {
-        // 1. 优先 Authorization Bearer token → userId
+        // 1. Authorization Bearer token を優先 → userId
         if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7).trim();
             if (!token.isEmpty()) {
@@ -93,7 +93,7 @@ public class AiChatServiceImpl implements AiChatService {
                 }
             }
         }
-        // 2. 客户端会话 key（同一浏览器持久化）
+        // 2. クライアントのセッションキー（同一ブラウザで永続化）
         if (StringUtils.hasText(clientSessionId)) {
             String clean = clientSessionId.trim();
             if (clean.length() > 64) {
@@ -101,7 +101,7 @@ public class AiChatServiceImpl implements AiChatService {
             }
             return new SessionInfo(clean, false);
         }
-        // 3. 新生成
+        // 3. 新規生成
         return new SessionInfo(UUID.randomUUID().toString().replace("-", "").substring(0, 24), true);
     }
 
@@ -113,10 +113,10 @@ public class AiChatServiceImpl implements AiChatService {
         }
         String userText = message.trim();
 
-        // 读取历史（异常降级为空历史，不影响对话）
+        // 履歴を読み込み（異常時は空履歴にフォールバックし、対話は継続）
         List<Map<String, Object>> history = readHistory(sessionId);
 
-        // 组装 messages：system 人设 + 历史多轮 + 本轮 user
+        // messages を組み立て：system ロール + 過去の多輪履歴 + 今回の user
         List<Message> messages = new ArrayList<>();
         messages.add(new SystemMessage(SYSTEM_PROMPT));
         for (Map<String, Object> item : history) {
@@ -161,7 +161,7 @@ public class AiChatServiceImpl implements AiChatService {
                     if (assistantText.length() == 0) {
                         sendLine(emitter, EVENT_ERROR_PREFIX + "AI 未返回有效内容，请重试");
                     } else {
-                        // 追加本轮 user + assistant，截断 + TTL
+                        // 今回の user + assistant を追記し、切り詰め + TTL 設定
                         history.add(roleItem("user", userText));
                         history.add(roleItem("assistant", assistantText.toString().trim()));
                         writeHistory(sessionId, history);
@@ -185,7 +185,7 @@ public class AiChatServiceImpl implements AiChatService {
                 })
                 .subscribe();
 
-        // 客户端断开/超时兜底：取消 DeepSeek 订阅，避免泄漏
+        // クライアント切断/タイムアウト時のフォールバック：DeepSeek サブスクリプションをキャンセルし、リークを防ぐ
         emitter.onTimeout(() -> {
             finished.set(true);
             disposable.dispose();
@@ -210,7 +210,7 @@ public class AiChatServiceImpl implements AiChatService {
         }
     }
 
-    // ===== 内部方法 =====
+    // ===== 内部メソッド =====
 
     private List<Map<String, Object>> readHistory(String sessionId) {
         try {

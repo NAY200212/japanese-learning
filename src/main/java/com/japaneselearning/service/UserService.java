@@ -4,13 +4,13 @@ import com.japaneselearning.entity.User;
 
 public interface UserService {
 
-    // 注册：用户名存在返回 false，成功返回 true
+    // 登録：ユーザー名が既存なら false、成功なら true を返す
     boolean register(String username, String password, String email);
 
-    // 登录：用户名密码对则返回 User，否则返回 null
+    // ログイン：ユーザー名とパスワードが一致すれば User を返し、一致しなければ null を返す
     User login(String username, String password);
 
-    /** 根据 id 查用户（登录后获取个人信息用） */
+    /*指定 id のユーザーを取得（ログイン後の個人情報取得用） */
     User findById(Long id);
 
 }

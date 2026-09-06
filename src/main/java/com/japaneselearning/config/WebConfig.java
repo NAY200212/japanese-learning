@@ -17,8 +17,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor)
-                .addPathPatterns("/api/user/me", "/api/word/memory", "/api/word/memory/list")   // 保护：这些接口要验 token
-                .excludePathPatterns("/api/user/register", "/api/user/login") // 排除：注册登录不验
+                .addPathPatterns("/api/user/me", "/api/word/memory", "/api/word/memory/list")   // 保護対象：これらの API は token 検証が必要
+                .excludePathPatterns("/api/user/register", "/api/user/login") // 除外：登録・ログインは検証不要
                 .addPathPatterns("/api/checkin/**", "/api/kana/progress", "/api/dashboard/**")
                 .addPathPatterns("/api/record/**", "/api/wrong/**")
                 .addPathPatterns("/api/exam/**")

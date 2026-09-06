@@ -1,16 +1,16 @@
-// 背单词页：等级筛选 + 单词卡片 + 熟悉/模糊/陌生标记 + 分页
-// 标记数据以后端 /api/word/memory/list 为准回显，localStorage 仅作离线缓存
-const WORD_SIZE = 10;              // 每页单词数
-const WORD_MARKED_KEY = 'kotoba_word_marked'; // 本地缓存 {wordId: status}
+// 単語暗記ページ：レベル絞り込み＋単語カード＋覚えた/あいまい/忘れたマーク＋ページング
+// マークのデータはバックエンド /api/word/memory/list を正とし、localStorage はオフラインキャッシュとしてのみ使用
+const WORD_SIZE = 10;              // 1 ページの単語数
+const WORD_MARKED_KEY = 'kotoba_word_marked'; // ローカルキャッシュ {wordId: status}
 const WORD_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
-let wordLevel = '';    // '' = 全部
+let wordLevel = '';    // '' = すべて
 let wordPage = 1;
 let wordTotal = 0;
 let wordList = [];
-let wordMarked = {};   // wordId -> status（后端回显）
+let wordMarked = {};   // wordId -> status（バックエンド反映）
 
-// 加载用户标记记录（后端为准，失败回退本地缓存）
+// ユーザーのマーク記録を読み込み（バックエンド正。失敗時はローカルキャッシュへフォールバック）
 async function loadWordMarks() {
   try {
     const list = await api('/word/memory/list');
@@ -39,7 +39,7 @@ async function loadWords() {
   wordPage = data.page || wordPage;
 }
 
-// 等级按钮显示名：空 = 全部
+// レベルボタンの表示名：空 = すべて
 function levelLabel(lv) {
   return lv === '' ? '全部' : lv;
 }
@@ -63,7 +63,7 @@ async function renderWord() {
     <div class="word-pager" id="wordPager"></div>
   `;
 
-  // 等级筛选
+  // レベル絞り込み
   el.querySelectorAll('.seg button').forEach((btn) => {
     btn.addEventListener('click', () => {
       wordLevel = btn.dataset.level;
@@ -72,7 +72,7 @@ async function renderWord() {
     });
   });
 
-  // SRS 到期复习入口
+  // SRS 期限到来の復習エントリ
   el.querySelector('#srsBtn').addEventListener('click', () => enterSRS(el));
 
   try {
@@ -83,7 +83,7 @@ async function renderWord() {
   }
 }
 
-// 加载 SRS 待复习数显示在按钮上
+// SRS の復習待ち件数を読み込んでボタンに表示
 async function loadSrsDueCount() {
   const btn = document.getElementById('srsDue');
   if (!btn) return;
@@ -95,7 +95,7 @@ async function loadSrsDueCount() {
   }
 }
 
-// 进入 SRS 复习模式：拉到期队列逐词翻卡
+// SRS 復習モードへ：期限到来キューを取得し、単語を 1 枚ずつめくって復習
 let srsQueue = [];
 let srsIndex = 0;
 
@@ -139,14 +139,14 @@ function renderSrsCard(el) {
       </div>
     </div>`;
 
-  // 点击翻面
+  // クリックで裏返し
   const front = wrap.querySelector('.srs-front');
   front.addEventListener('click', () => {
     wrap.querySelector('.srs-back').classList.toggle('hidden');
     wrap.querySelector('.srs-hint').classList.toggle('hidden');
   });
 
-  // 三按钮提交结果
+  // 3 ボタンで結果を提出
   wrap.querySelectorAll('.srs-btns button').forEach((btn) => {
     btn.addEventListener('click', async () => {
       btn.disabled = true;
@@ -178,17 +178,17 @@ function renderWordList(el) {
     wrap.innerHTML = wordList.map((w) => wordCardHTML(w)).join('');
   }
 
-  // 列表淡入（翻页 / 初次加载完成后触发）
+  // リストのフェードイン（ページめくり / 初回ロード完了後に発火）
   wrap.classList.remove('word-enter');
   void wrap.offsetWidth;
   wrap.classList.add('word-enter');
 
-  // 标记按钮
+  // マークボタン
   el.querySelectorAll('.mark-btns button').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const id = Number(btn.dataset.id);
       const status = btn.dataset.status;
-      if (wordMarked[id]) return; // 已标记过
+      if (wordMarked[id]) return; // マーク済み
 
       try {
         await api('/word/memory', {
@@ -198,7 +198,7 @@ function renderWordList(el) {
         setWordMarked(id, status);
         renderWordList(el);
       } catch (e) {
-        // 标记失败：仅提示，不改变界面
+        // マーク失敗：メッセージ表示のみで UI は変えない
         const card = wrap.querySelector(`[data-card="${id}"] .mark-state`);
         if (card) card.textContent = '标记失败：' + e.message;
       }
@@ -267,7 +267,7 @@ function renderWordPager(el) {
   });
 }
 
-// 翻页过渡：列表先淡出上移，数据加载完成后淡入上移（约 0.29s）
+// ページめくりトランジション：リストを一度フェードアウト＆上昇させ、データ読み込み完了後にフェードイン＆上昇（約 0.29s）
 function flipWordPage(delta, el) {
   const wrap = el.querySelector('#wordList');
   if (!wrap) return;

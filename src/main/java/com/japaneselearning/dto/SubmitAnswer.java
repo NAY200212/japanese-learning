@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class SubmitAnswer {
-    private Integer questionId; // 题目ID
-    private Integer optionId;   // 用户选择的选项ID
+    private Integer questionId; // 問題ID
+    private Integer optionId;   // ユーザーが選択した選択肢ID
 }

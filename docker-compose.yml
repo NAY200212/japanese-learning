@@ -6,10 +6,10 @@ services:
       MYSQL_ROOT_PASSWORD: "123456"
       MYSQL_DATABASE: japanese_learning
     ports:
-      - "3308:3306"          # 宿主机3308 → 容器3306，避免和你本地3307冲突
+      - "3308:3306"          # ホスト 3308 → コンテナ 3306。ローカル 3307 との衝突を回避
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./docker/initdb:/docker-entrypoint-initdb.d   # 首次启动自动执行建表+灌数据
+      - ./docker/initdb:/docker-entrypoint-initdb.d   # 初回起動時に建表とデータ投入を自動実行
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p123456"]
       interval: 5s

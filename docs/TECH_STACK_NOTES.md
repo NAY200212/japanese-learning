@@ -1,14 +1,3 @@
----
-AIGC:
-    Label: "1"
-    ContentProducer: 001191440300708461136T1XGW3
-    ProduceID: f8f5684a610de3d952eedcce4f3e4d6d_5aeb1ebfa53511f1903b525400f8a581
-    ReservedCode1: o45CipBepiS7WIsrUkQuIKKr/qSHdVU4zA2qqGvK3r5gsTb44T1S1nicmKFFykbbIsjVM1IX9kNYGtHQSpy6yKAMHMkRPfMPflPahfo7AOyRUcxjNSiYX8YZY3IXZO60u7kwf/OvpM2PKgQHYBAko2yQPCSQJtIp0bMBtc31vZ82r2qX5wTUQXLJWkQ=
-    ContentPropagator: 001191440300708461136T1XGW3
-    PropagateID: f8f5684a610de3d952eedcce4f3e4d6d_5aeb1ebfa53511f1903b525400f8a581
-    ReservedCode2: o45CipBepiS7WIsrUkQuIKKr/qSHdVU4zA2qqGvK3r5gsTb44T1S1nicmKFFykbbIsjVM1IX9kNYGtHQSpy6yKAMHMkRPfMPflPahfo7AOyRUcxjNSiYX8YZY3IXZO60u7kwf/OvpM2PKgQHYBAko2yQPCSQJtIp0bMBtc31vZ82r2qX5wTUQXLJWkQ=
----
-
 # 技术栈知识点与面试要点笔记
 
 > 本项目（日语学习平台）技术栈全解析 + 面试高频问题整理。

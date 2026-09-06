@@ -1,6 +1,6 @@
 package com.japaneselearning.service;
 
 public interface AnswerRecordService {
-    // 提交一条答题记录
+    // 解答記録を 1 件送信
     void submit(Integer userId,Integer questionId,Boolean isCorrect,String mode);
 }

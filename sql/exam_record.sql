@@ -1,5 +1,5 @@
--- JLPT 模拟考试计分体系（P2）
--- 1) exam_record：一次考试的成绩单（180 分制，分项统计）
+-- JLPT 模擬試験の採点体系（P2）
+-- 1) exam_record：1 回の試験の成績表（180 点満点、セクション別集計）
 CREATE TABLE IF NOT EXISTS exam_record (
     id             INT AUTO_INCREMENT PRIMARY KEY,
     user_id        INT NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS exam_record (
     CONSTRAINT fk_exam_record_user FOREIGN KEY (user_id) REFERENCES user (id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '模拟考试成绩单';
 
--- 2) exam_answer：单题答题明细（与成绩单同事务写入）
+-- 2) exam_answer：問題ごとの解答明細（成績表と同一トランザクションで書き込む）
 CREATE TABLE IF NOT EXISTS exam_answer (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     record_id   INT NOT NULL,

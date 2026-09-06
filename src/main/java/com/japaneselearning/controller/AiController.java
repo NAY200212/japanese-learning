@@ -17,8 +17,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.util.Map;
 
 /**
- * AI 助手接口：/api/ai/*
- * 不依赖 userId，登录态非必须（前端已登录会带 token，不影响）。
+ * AI アシスタント API：/api/ai/*（userId 非依存）
+ * ログイン状態は必須ではない（フロントがログイン済みなら token が付与されるだけで影響なし）
  */
 @RestController
 @RequestMapping("/api/ai")
@@ -32,10 +32,10 @@ public class AiController {
     private AiChatService aiChatService;
 
     /**
-     * 连续对话流式接口：POST /api/ai/chat/stream，body {message}
-     * SSE 事件：默认 message 事件，data 为文本增量；结束 data: [DONE]；异常 data: [ERROR]:msg。
-     * 会话：Authorization Bearer token 有效时按 userId 记忆；否则按请求头 X-Chat-Session；
-     * 首次（未带 X-Chat-Session 且无 token）会在响应头返回新建的 X-Chat-Session 供前端持久化。
+     * 連続対話ストリーミング API：POST /api/ai/chat/stream（body は {message}）
+     * SSE イベント：既定は message イベント。data はテキスト差分。終了時 data: [DONE]、異常時 data: [ERROR]:msg。
+     * セッション：Authorization Bearer token が有効なら userId 単位で記憶。それ以外はリクエストヘッダー X-Chat-Session を使用。
+     * 初回（X-Chat-Session なし & token なし）はレスポンスヘッダーで新規 X-Chat-Session を返し、フロントエンドが永続化する
      */
     @PostMapping(value = "/chat/stream", produces = "text/event-stream;charset=utf-8")
     @Operation(summary = "AI 连续对话（SSE 流式）",
@@ -55,7 +55,7 @@ public class AiController {
         return emitter;
     }
 
-    /** 清空当前会话历史记忆：POST /api/ai/chat/clear，带与聊天一致的 Authorization / X-Chat-Session */
+    /*現在のセッション履歴をクリア：POST /api/ai/chat/clear。チャットと同じ Authorization / X-Chat-Session を付与 */
     @PostMapping("/chat/clear")
     @Operation(summary = "清空 AI 对话记忆")
     public Result<Boolean> clearChat(@RequestHeader(value = "Authorization", required = false) String authorization,

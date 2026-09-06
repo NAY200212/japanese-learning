@@ -4,23 +4,23 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * 到期复习词展示对象：word_review JOIN word 的结果
+ * 復習期限が来た単語の表示オブジェクト：word_review JOIN word の結果
  */
 public class ReviewItem {
 
-    private Long id;                 // 复习记录ID
-    private Integer userId;          // 用户ID
-    private Integer wordId;          // 单词ID
-    private Integer repetitions;     // 连续答对次数
-    private Integer intervalDays;    // 当前间隔（天）
-    private LocalDate dueDate;       // 下次到期日
-    private LocalDateTime lastReviewedAt; // 上次复习时间
+    private Long id;                 // 復習記録ID
+    private Integer userId;          // ユーザーID
+    private Integer wordId;          // 単語ID
+    private Integer repetitions;     // 連続正解回数
+    private Integer intervalDays;    // 現在の間隔（日）
+    private LocalDate dueDate;       // 次回復習予定日
+    private LocalDateTime lastReviewedAt; // 前回復習日時
 
-    // 以下来自 word 表
-    private String word;             // 日语写法
-    private String kana;             // 读音
-    private String meaning;          // 中文释义
-    private String level;            // 等级 N5~N1
+    // 以下は word テーブル由来のフィールド
+    private String word;             // 日本語表記
+    private String kana;             // 読み仮名
+    private String meaning;          // 中国語の意味
+    private String level;            // レベル N5〜N1
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

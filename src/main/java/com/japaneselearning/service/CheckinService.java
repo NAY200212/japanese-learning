@@ -5,16 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 public interface CheckinService {
-    // 打卡：返回结果消息（"打卡成功" 或 "今日已打卡"）
+    // チェックイン：結果メッセージを返す（"チェックイン成功" または "今日はチェックイン済み"）
     String checkin(Integer userId);
 
-    // 查询今天是否已打卡
+    // 今日チェックイン済みかを取得
     boolean isCheckedToday(Integer userId);
 
-    // 查询某月已打卡日期列表
+    // 指定月のチェックイン日一覧を取得
     List<LocalDate> findMonth(Integer userId, String month);
 
-    // 统计：总打卡天数 + 连续打卡天数
+    // 集計：総チェックイン日数 + 連続チェックイン日数
     Map<String, Object> stats(Integer userId);
 
 }

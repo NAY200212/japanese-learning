@@ -41,19 +41,19 @@ public class DashboardController {
     @Autowired
     private WrongBookMapper wrongBookMapper;
 
-    // GET /api/dashboard/stats 学习总览统计
+    // GET /api/dashboard/stats 学習サマリー統計
     @GetMapping("/stats")
     @Operation(summary = "学习统计总览")
     public Result<Map<String, Object>> stats(@RequestAttribute("userId") Integer userId) {
         Map<String, Object> data = new HashMap<>();
 
-        // 打卡：今日是否打卡、总天数、连续天数
+        // チェックイン：今日の有無・総日数・連続日数
         data.put("checkinToday", checkinService.isCheckedToday(userId));
         Map<String, Object> checkinStats = checkinService.stats(userId);
         data.put("checkinTotalDays", checkinStats.get("totalDays"));
         data.put("checkinConsecutiveDays", checkinStats.get("consecutiveDays"));
 
-        // 单词：词库总数、标记统计
+        // 単語：辞書総数・マーク統計
         data.put("wordTotal", wordService.countByLevel(null));
         int familiar = 0, vague = 0, strange = 0;
         List<Map<String, Object>> counts = wordMemoryMapper.countByUser(userId);
@@ -69,11 +69,11 @@ public class DashboardController {
         data.put("wordStrange", strange);
         data.put("wordMarked", familiar + vague + strange);
 
-        // 假名：已掌握数、总数（46 个清音）
+        // かな：習得済み数・総数（清音 46 個）
         data.put("kanaMastered", kanaProgressService.countByUser(userId));
         data.put("kanaTotal", 46);
 
-        // 答题：题库总数、答题数、正确率、错题
+        // 解答：問題総数・解答数・正答率・誤答
         data.put("quizTotal", questionMapper.countAll());
         int answered = answerRecordMapper.countByUser(userId);
         int correct = answerRecordMapper.countCorrectByUser(userId);

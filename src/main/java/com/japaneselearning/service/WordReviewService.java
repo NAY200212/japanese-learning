@@ -8,20 +8,20 @@ import java.util.Map;
 public interface WordReviewService {
 
     /**
-     * 查当前用户的到期复习队列（due_date <= 今天）
+     * 現在のユーザーの復習期限到来キューを取得（due_date <= 今日）
      */
     List<ReviewItem> getDueList(Integer userId, int limit);
 
     /**
-     * 提交一次复习结果
-     * @param userId 用户ID
-     * @param wordId 单词ID
-     * @param result 0=忘记 1=记得 2=模糊
+     * 復習結果を 1 回分送信
+     * @param userId ユーザーID
+     * @param wordId 単語ID
+     * @param result 0=忘れた 1=覚えている 2=あいまい
      */
     void submitReview(Integer userId, Integer wordId, int result);
 
     /**
-     * 统计：今日待复习数 / 今日已复习数
+     * 集計：今日の復習予定数 / 今日の復習済み数
      */
     Map<String, Object> getStats(Integer userId);
 }

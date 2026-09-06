@@ -15,7 +15,7 @@ public class DailyStatsTask {
 
     private final DailyStatsService dailyStatsService;
 
-    // cron：秒 分 时 日 月 周 → 每天 23:50 执行
+    // cron：秒 分 時 日 月 曜日 → 毎日 23:50 に実行
     @Scheduled(cron = "0 50 23 * * ?")
     public void generateDailyStats() {
         dailyStatsService.generateTodayStats();

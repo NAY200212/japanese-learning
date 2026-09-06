@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 业务异常：主动抛的，直接透出提示语
+    // 業務例外：自らスローしたもの。メッセージをそのまま表示に出す
     @ExceptionHandler(BusinessException.class)
     public Result<Void> handleBusiness(BusinessException e) {
         return Result.error(e.getMessage());
     }
 
-    // 兜底：未知异常，记日志 + 通用提示
+    // フォールバック：未知の例外。ログ出力 + 汎用メッセージ
     @ExceptionHandler(Exception.class)
     public Result<Void> handleException(Exception e) {
         log.error("系统异常", e);

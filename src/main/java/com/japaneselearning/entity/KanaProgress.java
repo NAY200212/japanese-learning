@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class KanaProgress {
-    private Integer id;          // 主键
+    private Integer id;          // 主キー
     private Integer userId;      // user_id → userId
-    private String hiragana;     // 已掌握的平假名
+    private String hiragana;     // 習得済みの平仮名
     private LocalDateTime createdAt;  // created_at → createdAt
 }

@@ -16,7 +16,7 @@ import java.util.Map;
 @Service
 public class WordReviewServiceImpl implements WordReviewService {
 
-    // SM-2 简化间隔表：连续答对 1~5 次后对应的复习间隔（天）
+    // SM-2 簡易間隔表：連続正解 1〜5 回後に応じた復習間隔（日）
     private static final int[] SCHEDULE = {1, 3, 7, 14, 30};
 
     @Autowired
@@ -29,10 +29,10 @@ public class WordReviewServiceImpl implements WordReviewService {
 
     @Override
     public void submitReview(Integer userId, Integer wordId, int result) {
-        // 1. 查该词对用户是否已有复习记录
+        // 1. 対象単語の復習記録がユーザーに既にあるか確認
         WordReview review = wordReviewMapper.findByUserAndWord(userId, wordId);
         if (review == null) {
-            // 首次学习：建一条记录，明天第一次复习
+            // 初回学習：記録を新規作成し、翌日に初回復習
             review = new WordReview();
             review.setUserId(userId);
             review.setWordId(wordId);
@@ -44,23 +44,23 @@ public class WordReviewServiceImpl implements WordReviewService {
             return;
         }
 
-        // 2. 已有记录：按结果重新计算间隔
+        // 2. 記録あり：結果に応じて間隔を再計算
         LocalDate today = LocalDate.now();
         int rep = review.getRepetitions() == null ? 0 : review.getRepetitions();
 
         if (result == 1) {
-            // 记得：连续答对 +1，间隔按表拉长
-            rep = Math.min(rep + 1, SCHEDULE.length); // 封顶 5
+            // 覚えている：連続正解 +1、間隔を表に沿って延長
+            rep = Math.min(rep + 1, SCHEDULE.length); // 上限 5
             review.setRepetitions(rep);
             review.setIntervalDays(SCHEDULE[rep - 1]);
             review.setDueDate(today.plusDays(review.getIntervalDays()));
         } else if (result == 2) {
-            // 模糊：当作答对一半，间隔减半但不归零
+            // あいまい：半分正解として扱い、間隔を半分にするがゼロにはしない
             review.setRepetitions(rep);
             review.setIntervalDays(Math.max(1, review.getIntervalDays() / 2));
             review.setDueDate(today.plusDays(review.getIntervalDays()));
         } else {
-            // 忘记：重置为 1 天，明天再复习
+            // 忘れた：1 日にリセットし、翌日また復習
             review.setRepetitions(0);
             review.setIntervalDays(1);
             review.setDueDate(today.plusDays(1));
@@ -74,7 +74,7 @@ public class WordReviewServiceImpl implements WordReviewService {
         LocalDate today = LocalDate.now();
         Map<String, Object> stats = new HashMap<>();
         stats.put("dueCount", wordReviewMapper.countDueByUser(userId, today));
-        // 今日已复习数：最后一次复习是今天的记录数（简化统计）
+        // 今日の復習済み数：最終復習が今日の記録数（簡易集計）
         stats.put("todayReviewed", wordReviewMapper.countReviewedToday(userId, today));
         return stats;
     }

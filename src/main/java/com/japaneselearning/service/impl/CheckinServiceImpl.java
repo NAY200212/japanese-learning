@@ -49,7 +49,7 @@ public class CheckinServiceImpl implements CheckinService {
         List<LocalDate> dates = checkinMapper.findAllDates(userId);
         Set<LocalDate> set = new HashSet<>(dates);
 
-        // 连续打卡：从今天往前数，断档就停
+        // 連続チェックイン：今日から過去へ遡って数え、途切れたら停止
         int consecutive = 0;
         LocalDate d = LocalDate.now();
         while (set.contains(d)) {

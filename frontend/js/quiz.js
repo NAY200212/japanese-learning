@@ -1,13 +1,13 @@
-// 测验页：题库答题（W3）
-// 练习模式：按等级分页刷题；模拟考试：随机抽题判分
+// テストページ：問題集での解答（W3）
+// 練習モード：レベル別にページングして演習。模擬試験：ランダム出題で採点
 let quizQuestions = [];
 let quizIndex = 0;
 let quizCorrect = 0;
 let quizLocked = false;
 let quizLevel = 'N5';
-let quizMode = 'practice'; // practice 练习 / exam 模拟考试
+let quizMode = 'practice'; // practice 練習 / exam 模擬試験
 
-// Fisher-Yates 随机打乱（选项顺序随机，正确答案不再固定左侧）
+// Fisher-Yates のランダムシャッフル（選択肢の順序がランダムになり、正解が左端に固定されない）
 function shuffleOptions(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -16,7 +16,7 @@ function shuffleOptions(arr) {
   return arr;
 }
 
-// 拉取当前等级总页数，更新页码输入框上限与提示
+// 現在のレベルの総ページ数を取得し、ページ番号入力欄の上限とヒントを更新
 async function loadQuizPageTotal(el) {
   try {
     const page = await api(`/question/page?level=${quizLevel}&page=1&size=10`);
@@ -25,13 +25,13 @@ async function loadQuizPageTotal(el) {
     const input = el.querySelector('#quizPageInput');
     if (totalEl) totalEl.textContent = `/ 共 ${tp} 页`;
     if (input) input.max = tp;
-  } catch (e) { /* 静默降级 */ }
+  } catch (e) { /* 静かにフォールバック */ }
 }
 
 async function renderQuiz() {
   const el = document.getElementById('quiz');
 
-  // 没有题目 → 显示模式选择
+  // 問題が無い → モード選択を表示
   if (quizQuestions.length === 0) {
     el.innerHTML = `
       <h2>测验</h2>
@@ -63,7 +63,7 @@ async function renderQuiz() {
     if (quizMode === 'practice') loadQuizPageTotal(el);
     el.querySelector('#startQuizBtn').addEventListener('click', async () => {
       try {
-        // 先读取页码（下方会替换掉输入框 DOM）
+        // 先にページ番号を読み取る（この後で入力欄 DOM が置き換わるため）
         let pageNo = 1;
         if (quizMode === 'practice') {
           const input = el.querySelector('#quizPageInput');
@@ -84,9 +84,9 @@ async function renderQuiz() {
           el.querySelector('.quiz-box').innerHTML = `<div class="quiz-prompt">该页暂无题目，试试其他页码</div>`;
           return;
         }
-        // 逐题拉详情（带选项）
+        // 問題ごとに詳細を取得（選択肢付き）
         quizQuestions = await Promise.all(list.map((q) => api(`/question/${q.id}`)));
-        // 选项随机打乱：正确答案不再固定在左侧第一个
+        // 選択肢をランダムシャッフル：正解が左端の先頭に固定されない
         quizQuestions.forEach((q) => { if (Array.isArray(q.options)) shuffleOptions(q.options); });
         quizIndex = 0;
         quizCorrect = 0;
@@ -98,7 +98,7 @@ async function renderQuiz() {
     return;
   }
 
-  // 结束页
+  // 終了ページ
   if (quizIndex >= quizQuestions.length) {
     const total = quizQuestions.length;
     el.innerHTML = `
@@ -161,7 +161,7 @@ async function renderQuiz() {
         fb.textContent += ` 解析：${q.analysis}`;
       }
 
-      // W4：提交答题记录（答错自动进错题本，mode 区分练习/考试）
+      // W4：解答記録の提出（誤答は自動で誤答ノートへ。mode で練習/試験を区別）
       api('/record/submit', {
         method: 'POST',
         body: JSON.stringify({ questionId: q.id, isCorrect: correct, mode: quizMode })

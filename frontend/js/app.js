@@ -1,4 +1,4 @@
-// 主框架：导航路由 + 仪表盘
+// メインフレーム：ナビゲーションルーティング＋ダッシュボード
 const PAGES = ['dashboard', 'kana', 'quiz', 'exam', 'wrong', 'word', 'checkin', 'ai'];
 
 function showPage(name) {
@@ -19,19 +19,19 @@ function showPage(name) {
   if (name === 'ai') renderAi();
 }
 
-// 路由：hash 变化时切页面
+// ルーティング：hash が変わったらページを切り替え
 window.addEventListener('hashchange', () => {
   const name = location.hash.replace('#/', '') || 'dashboard';
   showPage(PAGES.includes(name) ? name : 'dashboard');
 });
 
-// 退出
+// ログアウト
 document.getElementById('logoutBtn').addEventListener('click', () => {
   clearSession();
   location.href = 'index.html';
 });
 
-// 仪表盘：数据全部来自后端 /api/dashboard/stats
+// ダッシュボード：データはすべてバックエンドの /api/dashboard/stats から取得
 async function renderDashboard() {
   const el = document.getElementById('dashboard');
   el.innerHTML = `
@@ -117,7 +117,7 @@ async function renderDashboard() {
     </div>`;
 }
 
-// 进入应用：先验证 token（调 /user/me），失败自动跳回登录页
+// アプリ入場：まず token を検証（/user/me を呼ぶ）。失敗時は自動でログインページへ
 (async function init() {
   document.getElementById('userName').textContent = localStorage.getItem(USER_KEY) || '';
   if (!getToken()) { location.href = 'index.html'; return; }
@@ -126,7 +126,7 @@ async function renderDashboard() {
     const me = await api('/user/me');
     document.getElementById('userName').textContent = me.username;
   } catch (e) {
-    // api() 内部已处理跳转
+    // api() 内部で遷移を処理済み
     return;
   }
 

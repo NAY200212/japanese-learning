@@ -1,18 +1,18 @@
-// AI 助手页：连续对话聊天界面（SSE 流式打字机输出 + 多轮记忆）
-// 接口：POST /api/ai/chat/stream（text/event-stream）
-//   请求头 Authorization: Bearer token（已登录）与 X-Chat-Session（浏览器会话）二选一或都带
-//   响应头 X-Chat-Session 需要保存到 localStorage，保证同浏览器连续对话有记忆
-//   事件 data 行：文本增量 → [DONE] 正常结束 → [ERROR]:xxx 异常
-// 保留入口：renderAi() 由 app.js 路由调用；原三功能（错题解析/单词例句/语法问答）以快捷按钮保留，
-//   点击后把对应任务提示词填入输入框。
+// AI アシスタントページ：連続対話チャット UI（SSE ストリーミングのタイプライター出力＋多ターン記憶）
+// API：POST /api/ai/chat/stream（text/event-stream）
+//   リクエストヘッダーは Authorization: Bearer token（ログイン済み）と X-Chat-Session（ブラウザセッション）のどちらか一方または両方
+//   レスポンスヘッダーの X-Chat-Session は localStorage に保存し、同一ブラウザでの連続対話に記憶を残す
+//   イベント data 行：テキスト差分 → [DONE] 正常終了 → [ERROR]:xxx 異常
+// エントリ維持：renderAi() は app.js のルーティングから呼び出し。旧 3 機能（誤答解説/単語例文/文法 Q&A）はショートカットボタンとして残し、
+//   クリックで対応タスクのプロンプトを入力欄へ入れる
 
 const AI_SESSION_KEY = 'kotoba_ai_session';
 
-let aiSending = false;      // 是否正在请求（防重复发送）
-let aiBotEl = null;         // 当前正在输出（打字机）的 AI 气泡
-let aiTypeBuffer = '';      // 待打字的文本缓冲
-let aiTypeTimer = null;     // 打字机定时器
-let aiStreamAbort = null;   // AbortController，用于断开流
+let aiSending = false;      // リクエスト中かどうか（重複送信の防止）
+let aiBotEl = null;         // 現在出力中（タイプライター）の AI バブル
+let aiTypeBuffer = '';      // タイプ待ちのテキストバッファ
+let aiTypeTimer = null;     // タイプライター用タイマー
+let aiStreamAbort = null;   // AbortController。ストリーム切断用
 
 function renderAi() {
   const el = document.getElementById('ai');
@@ -45,14 +45,14 @@ function renderAi() {
     </div>
   `;
 
-  // 欢迎消息 + 快捷模板说明
+  // 歓迎メッセージ＋ショートカットテンプレートの説明
   appendChatMsg('ai',
     '你好，我是ことば AI 助教。可以问我：错题为什么错、某个单词怎么用、语法点之间的区别、复习计划建议……' +
     '\n\n当前会话/账号会自动保存最近约 10 轮对话记忆，你可以直接说「上一题呢」「再举个例子」连续追问。' +
     '\n下方三个快捷按钮可一键带入常用提问模板（填入输入框后可修改再发送）。'
   );
 
-  // 快捷按钮 → 填入模板
+  // ショートカットボタン → テンプレートをセット
   const quickTpl = {
     wrong: '请帮我解析这道日语错题，说明考点并指出错因：\n（请把题干、选项和你选的答案补充在下面）\n',
     word: '请为日语单词「頑張る」生成 2-3 个地道例句，每条含假名注音与中文翻译，并说明常用搭配。（可以把「」里的词换成你想学的）',
@@ -66,7 +66,7 @@ function renderAi() {
     });
   });
 
-  // 发送
+  // 送信
   document.getElementById('chatSendBtn').addEventListener('click', chatSend);
   document.getElementById('chatInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
@@ -75,11 +75,11 @@ function renderAi() {
     }
   });
 
-  // 清空会话（前端消息 + 后端 Redis 记忆）
+  // セッションをクリア（フロントのメッセージ＋バックエンドの Redis 記憶）
   document.getElementById('chatClearBtn').addEventListener('click', chatClear);
 }
 
-// ---------- 消息区 ----------
+// ---------- メッセージエリア ----------
 
 function appendChatMsg(role, text) {
   const box = document.getElementById('chatMessages');
@@ -100,7 +100,7 @@ function scrollChat() {
   if (box) box.scrollTop = box.scrollHeight;
 }
 
-// ---------- 打字机 ----------
+// ---------- タイプライター ----------
 
 function startTyping() {
   aiBotEl = appendChatMsg('ai', '');
@@ -118,7 +118,7 @@ function pumpType() {
     aiBotEl.classList.remove('typing');
     scrollChat();
   } else if (!aiStreamAbort || aiStreamAbort.signal.aborted) {
-    // 无新内容且流已结束则停止
+    // 新しい内容がなくストリームも終了していれば停止
     stopTyping();
   }
 }
@@ -143,7 +143,7 @@ function stopTyping() {
   if (aiTypeTimer) { clearInterval(aiTypeTimer); aiTypeTimer = null; }
 }
 
-// ---------- 发送 / SSE 流式读取 ----------
+// ---------- 送信 / SSE ストリーミング読み取り ----------
 
 async function chatSend() {
   const ta = document.getElementById('chatInput');
@@ -183,7 +183,7 @@ async function chatSend() {
       throw new Error('HTTP ' + res.status);
     }
 
-    // 保存服务端分配的会话 id（首次不带 X-Chat-Session 时返回新 id）
+    // サーバーが割り当てたセッション id を保存（初回に X-Chat-Session が無ければ新しい id が返る）
     const sid = res.headers.get('X-Chat-Session');
     if (sid) localStorage.setItem(AI_SESSION_KEY, sid);
 
@@ -200,7 +200,7 @@ async function chatSend() {
       if (done) break;
       buf += decoder.decode(value, { stream: true });
 
-      // 按 SSE 空行分隔事件；只取 data: 行内容
+      // SSE の空行でイベントを区切り、data: 行の内容だけを取得
       let sep;
       while ((sep = buf.indexOf('\n\n')) >= 0) {
         const raw = buf.slice(0, sep);
@@ -213,7 +213,7 @@ async function chatSend() {
         if (payload) handleSseData(payload);
       }
     }
-    // 处理结尾残留（个别 chunk 不完整）
+    // 末尾の残りを処理（一部チャンクが不完全な場合）
     if (buf.trim()) {
       const payload = buf.split('\n')
         .filter((l) => l.startsWith('data:'))
@@ -221,7 +221,7 @@ async function chatSend() {
         .join('\n');
       if (payload) handleSseData(payload);
     }
-    // 流结束兜底：即使后端未发 [DONE] 也把缓冲输出完并停表
+    // ストリーム終了時のフォールバック：バックエンドが [DONE] を送らなくてもバッファを出力し終えてタイマーを停止
     flushBot();
   } catch (e) {
     if (e.name === 'AbortError') {
@@ -265,7 +265,7 @@ function aiSetError(msg) {
   scrollChat();
 }
 
-// ---------- 清空会话 ----------
+// ---------- セッションクリア ----------
 
 async function chatClear() {
   const box = document.getElementById('chatMessages');
@@ -285,7 +285,7 @@ async function chatClear() {
   try {
     await fetch(API + '/ai/chat/clear', { method: 'POST', headers, body: '{}' });
   } catch (e) {
-    // 后端清理失败也照常清空本地视图
+    // バックエンドのクリア失敗時もローカルビューは通常どおりクリア
   }
   if (box) box.innerHTML = '';
   appendChatMsg('ai', '会话已清空。接下来是全新的一轮对话。');

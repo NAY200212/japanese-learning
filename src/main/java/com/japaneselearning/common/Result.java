@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class Result<T> {
-    private Integer code;   //1=成功 0=失败
-    private String message; //提示信息
-    private T data;         //返回的数据
+    private Integer code;   //1=成功 0=失敗
+    private String message; //提示メッセージ
+    private T data;         //返却データ
 
-    //成功(带数据)
+    //成功（データあり）
     public static <T> Result<T> success(T data) {
         Result<T> r = new Result<T>();
         r.setCode(1);
@@ -17,12 +17,12 @@ public class Result<T> {
         return r;
     }
 
-    //成功(不带数据)
+    //成功（データなし）
     public static <T> Result<T> success(){
         return success(null);
     }
 
-    //失败
+    //失敗
     public static <T> Result<T> error(String message) {
         Result<T> r = new Result<T>();
         r.setCode(0);

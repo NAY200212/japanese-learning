@@ -18,14 +18,14 @@ public class KanaController {
     @Autowired
     private KanaService kanaService;
 
-    // 全部五十音
+    // 全五十音を返す
     @GetMapping("/list")
     @Operation(summary = "五十音列表")
     public Result<List<Kana>> list() {
         return Result.success(kanaService.getAll());
     }
 
-    // 随机出题
+    // ランダム出題
     @GetMapping("/test")
     @Operation(summary = "随机出题")
     public Result<List<Kana>> test(@RequestParam(defaultValue = "10") int count) {

@@ -16,7 +16,7 @@ public class QuestionServiceImpl implements QuestionService {
     private QuestionMapper questionMapper;
 
     @Autowired
-    private QuestionOptionMapper questionOptionMapper;   // 新增注入
+    private QuestionOptionMapper questionOptionMapper;   // 新規インジェクションを追加
 
     @Override
     @Cacheable(cacheNames = "question:list",key = "'level:' + (#level ?: 'ALL') + ':type:' + (#type ?: 'ALL') +':page:' + #page + ':size:' + #size")
@@ -33,7 +33,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Question> findRandom(String level, int count) {
-        // 随机抽题不缓存：每次应返回不同题目，缓存会破坏随机性
+        // ランダム出題はキャッシュしない：毎回別の問題を返すべきで、キャッシュはランダム性を壊す
         return questionMapper.findRandom(level, count);
     }
 

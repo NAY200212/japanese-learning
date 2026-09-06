@@ -6,12 +6,12 @@ import java.util.List;
 
 @Data
 public class Question {
-    private Integer id;              // 主键
-    private String level;            // 等级 N5~N1
-    private String type;             // 题型: 文字・語彙/読解/聴解
-    private String content;          // 题干
-    private String analysis;         // 解析
-    private String audioUrl;         // 听力音频URL（可空）
-    private LocalDateTime createdAt; // 创建时间
+    private Integer id;              // 主キー
+    private String level;            // レベル N5〜N1
+    private String type;             // 問題タイプ: 文字・語彙/読解/聴解
+    private String content;          // 問題文
+    private String analysis;         // 解説
+    private String audioUrl;         // 聴解音声 URL（空可）
+    private LocalDateTime createdAt; // 作成日時
     private List<QuestionOption> options;
 }

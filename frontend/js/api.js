@@ -1,7 +1,7 @@
-// 后端接口地址（云端部署时改为公网地址；本地开发用 http://localhost:8081/api——AI 功能调试）
+// バックエンド API のアドレス（クラウドデプロイ時はパブリック URL に変更。ローカル開発は http://localhost:8081/api——AI 機能のデバッグ用）
 const API = 'http://localhost:8081/api';
 
-// token / 用户名存在 localStorage，之后所有请求自动带 Authorization 头
+// token / ユーザー名は localStorage に保存し、以後すべてのリクエストに自動で Authorization ヘッダーを付与
 const TOKEN_KEY = 'kotoba_token';
 const USER_KEY = 'kotoba_user';
 
@@ -19,7 +19,7 @@ function clearSession() {
   localStorage.removeItem(USER_KEY);
 }
 
-// 统一请求封装：自动带 token；401 时清会话回登录页；code !== 1 时抛错
+// 共通リクエストラッパー：token を自動付与。401 ならセッションをクリアしてログインページへ。code !== 1 なら例外を投げる
 async function api(path, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
   const token = getToken();

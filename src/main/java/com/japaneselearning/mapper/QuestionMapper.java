@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface QuestionMapper {
 
-    // 分页查询：等级+题型可选过滤
+    // ページング検索：レベル + 問題タイプを任意で絞り込み
     @Select("<script>" +
             "SELECT * FROM question " +
             "WHERE 1=1 " +
@@ -23,7 +23,7 @@ public interface QuestionMapper {
                                    @Param("offset") int offset,
                                    @Param("size") int size);
 
-    // 总数（分页要用）
+    // 総数（ページングに使用）
     @Select("<script>" +
             "SELECT COUNT(*) FROM question " +
             "WHERE 1=1 " +
@@ -33,7 +33,7 @@ public interface QuestionMapper {
     int countByCondition(@Param("level") String level,
                          @Param("type") String type);
 
-    // 随机抽题（模拟考试用）
+    // ランダム出題（模擬試験用）
     @Select("<script>" +
             "SELECT * FROM question " +
             "WHERE 1=1 " +
@@ -43,7 +43,7 @@ public interface QuestionMapper {
     List<Question> findRandom(@Param("level") String level,
                               @Param("count") int count);
 
-    // 查某等级全部题目（模拟考试判分用）
+    // 指定レベルの全問題を取得（模擬試験の採点用）
     @Select("SELECT * FROM question WHERE level = #{level}")
     List<Question> findAllByLevel(@Param("level") String level);
 

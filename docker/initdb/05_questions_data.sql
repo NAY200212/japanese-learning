@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 9.7.1, for macos26.4 (arm64)
+-- MySQL ダンプ 10.13（Distrib 9.7.1, macOS26.4 (arm64) 向け）
 --
--- Host: 127.0.0.1    Database: japanese_learning
+-- ホスト: 127.0.0.1    データベース: japanese_learning
 -- ------------------------------------------------------
--- Server version	9.7.1
+-- サーバーバージョン	9.7.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,7 +16,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Dumping data for table `question`
+-- テーブル `question` のデータ出力
 --
 
 /*!40000 ALTER TABLE `question` DISABLE KEYS */;
@@ -151,4 +151,4 @@ INSERT INTO `question` VALUES (120,'N3','読解','「この地域では、毎年
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-30 21:59:47
+-- ダンプ完了日時: 2026-08-30 21:59:47

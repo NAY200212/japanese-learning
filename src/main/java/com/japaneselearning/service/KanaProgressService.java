@@ -4,12 +4,12 @@ import java.util.List;
 
 public interface KanaProgressService {
 
-    // 查某用户已掌握假名列表
+    // 指定ユーザーの習得済みかな一覧を取得
     List<String> listByUser(Integer userId);
 
-    // 设置掌握状态：mastered=true 添加，false 取消
+    // 習得状態を設定：mastered=true なら追加、false なら解除
     void setMastered(Integer userId, String hiragana, boolean mastered);
 
-    // 统计掌握数量
+    // 習得数を集計
     int countByUser(Integer userId);
 }

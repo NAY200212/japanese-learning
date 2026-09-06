@@ -19,7 +19,7 @@ spring:
         enabled: ${REDIS_SSL:false}
       database: 0
       timeout: 3000ms
-  # DeepSeek AI（OpenAI 兼容协议）：api-key 只从环境变量读取，严禁写入 git 跟踪文件
+  # DeepSeek AI（OpenAI 互換プロトコル）：api-key は環境変数のみから読み取る。git 追跡ファイルへの記入は厳禁
   ai:
     openai:
       base-url: https://api.deepseek.com
@@ -33,10 +33,10 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
 
-# JWT 配置：secret 是签名密钥（随便写个长字符串），expiration 是过期时间（毫秒）
+# JWT 設定：secret は署名キー（任意の長い文字列）、expiration は有効期限（ミリ秒）
 jwt:
   secret: "japanese-learning-secret-key-2026-keep-it-long"
-  expiration: 8640000000   # 2400 小时
+  expiration: 8640000000   # 2400 時間（＝100 日）
 
 url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3307}/japanese_learning?...
 host: ${REDIS_HOST:localhost}

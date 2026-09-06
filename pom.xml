@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/> <!-- 親 POM は Maven 中央リポジトリから取得 -->
 	</parent>
 	<groupId>com.japaneselearning</groupId>
 	<artifactId>japanese-learning</artifactId>
@@ -53,7 +53,7 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-crypto</artifactId>
 		</dependency>
-		<!-- springdoc 2.8.9：适配 Spring Boot 3.4.1，Swagger UI 访问 /swagger-ui.html -->
+		<!-- springdoc 2.8.9：Spring Boot 3.4.1 に対応。Swagger UI は /swagger-ui.html で参照 -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -64,7 +64,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- JWT：登录后签发令牌，验证身份 -->
+		<!-- JWT：ログイン後にトークンを発行し、認証に使用 -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -90,7 +90,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
-		<!-- Spring AI OpenAI 兼容 Starter：1.0.0 GA，适配 Spring Boot 3.4.x；经 OpenAI 兼容协议接入 DeepSeek -->
+		<!-- Spring AI OpenAI 互換 Starter：1.0.0 GA、Spring Boot 3.4.x に対応。OpenAI 互換プロトコルで DeepSeek に接続 -->
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-openai-spring-boot-starter</artifactId>
@@ -151,7 +151,7 @@
 				<enabled>false</enabled>
 			</releases>
 		</repository>
-		<!-- spring-ai 1.0.0-M6 发布于 Spring Milestones 仓库，GitHub Actions 全新环境必须显式声明才能解析依赖 -->
+		<!-- spring-ai 1.0.0-M6 は Spring Milestones リポジトリに公開されている。GitHub Actions のクリーン環境でも依存を解決できるよう明示宣言が必要 -->
 		<repository>
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>

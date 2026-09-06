@@ -1,5 +1,5 @@
-// 错题本页：W4
-// 数据来自 /wrong/list（分页结构 { list, total, page, size, totalPages }），答错自动进本，可标记已掌握
+// 誤答ノートページ：W4
+// データは /wrong/list から取得（ページング構造 { list, total, page, size, totalPages }）。誤答は自動で入り、習得済みマークが可能
 let wrongPage = 1;
 let wrongTotal = 0;
 const WRONG_PAGE_SIZE = 10;

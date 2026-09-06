@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 @SpringBootApplication
-@EnableScheduling   // ← 新增这行，开启定时任务
+@EnableScheduling   // ← この行を追加して定期タスクを有効化
 
 public class JapaneseLearningApplication {
 

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 9.7.1, for macos26.4 (arm64)
+-- MySQL ダンプ 10.13（Distrib 9.7.1, macOS26.4 (arm64) 向け）
 --
--- Host: 127.0.0.1    Database: japanese_learning
+-- ホスト: 127.0.0.1    データベース: japanese_learning
 -- ------------------------------------------------------
--- Server version	9.7.1
+-- サーバーバージョン	9.7.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -18,13 +18,13 @@ SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
 SET @@SESSION.SQL_LOG_BIN= 0;
 
 --
--- GTID state at the beginning of the backup 
+-- バックアップ開始時点の GTID 状態 
 --
 
 SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '7bf4a0e8-8c22-11f1-aae5-13bf83541b8a:1-1164';
 
 --
--- Table structure for table `kana_progress`
+-- テーブル `kana_progress` の構造
 --
 
 DROP TABLE IF EXISTS `kana_progress`;
@@ -41,7 +41,7 @@ CREATE TABLE `kana_progress` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `exam_answer`
+-- テーブル `exam_answer` の構造
 --
 
 DROP TABLE IF EXISTS `exam_answer`;
@@ -60,7 +60,7 @@ CREATE TABLE `exam_answer` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `word_review`
+-- テーブル `word_review` の構造
 --
 
 DROP TABLE IF EXISTS `word_review`;
@@ -90,4 +90,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-30 21:59:12
+-- ダンプ完了日時: 2026-08-30 21:59:12

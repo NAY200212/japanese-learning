@@ -5,9 +5,9 @@ import com.japaneselearning.entity.Kana;
 import java.util.List;
 
 public interface KanaService {
-    /** 返回全部清音（46个） */
+    /*全清音（46 個）を返す */
     List<Kana> getAll();
 
-    /** 随机取 count 个假名，用于测试 */
+    /*ランダムに count 個の仮名を取得（テスト用） */
     List<Kana> getRandom(int count);
 }

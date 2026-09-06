@@ -1,9 +1,9 @@
-// 打卡页：查询今日打卡状态，未打卡可打卡；数据全部走后端持久化
-// 视觉：86 机械感（深黑+暖橙红+白金+军绿、瞄准镜、HUD 面板）+ 堀与宫村式滑动/入场动画
-// 打卡成功后：印章盖下动画 + 标题切换过渡 + 按钮淡出；日历、记录条与统计来自后端
-let checkinDone = false;     // 今日是否已打卡
-let checkinMsg = '';         // 后端返回的文案
-let scrollBound = false;     // 视差滚动监听只绑定一次
+// チェックインページ：今日のチェックイン状態を確認し、未チェックならチェックイン。データはすべてバックエンドで永続化
+// ビジュアル：86 メカ感（漆黒＋暖かなオレンジレッド＋プラチナ＋軍緑、スコープ、HUD パネル）＋堀宮式スライド/入場アニメーション
+// チェックイン成功後：スタンプを押すアニメーション＋タイトル切替トランジション＋ボタンのフェードアウト。カレンダー、記録バー、統計はバックエンドから
+let checkinDone = false;     // 今日チェックイン済みかどうか
+let checkinMsg = '';         // バックエンドが返すメッセージ
+let scrollBound = false;     // パララックススクロールのリスナーは一度だけバインド
 
 function pad2(n) { return String(n).padStart(2, '0'); }
 
@@ -15,7 +15,7 @@ function dateStr(d) {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
-// 本月已打卡日期（后端返回字符串数组）
+// 今月チェックイン済みの日付（バックエンドが返す文字列配列）
 async function loadCheckinMonth() {
   try {
     const days = await api('/checkin/month?month=' + monthStr(new Date()));
@@ -25,7 +25,7 @@ async function loadCheckinMonth() {
   }
 }
 
-// 打卡统计 {totalDays, consecutiveDays}
+// チェックイン統計 {totalDays, consecutiveDays}
 async function loadCheckinStats() {
   try {
     const s = await api('/checkin/stats');
@@ -35,7 +35,7 @@ async function loadCheckinStats() {
   }
 }
 
-// 本月日历（7 列周历：列头 月火水木金土日，周一开头，(getDay()+6)%7 偏移）
+// 今月のカレンダー（7 列の週表示：列ヘッダー 月火水木金土日、月曜始まり、(getDay()+6)%7 でオフセット）
 function renderCheckinCal(el, days) {
   const cal = el.querySelector('#checkinCal');
   if (!cal) return;
@@ -47,11 +47,11 @@ function renderCheckinCal(el, days) {
   const daySet = new Set((days || []).filter((d) => d.startsWith(prefix)));
   const today = dateStr(now);
 
-  const startOffset = (new Date(y, m, 1).getDay() + 6) % 7; // 周一 = 0
+  const startOffset = (new Date(y, m, 1).getDay() + 6) % 7; // 月曜 = 0
   const totalDays = new Date(y, m + 1, 0).getDate();
   const heads = ['月', '火', '水', '木', '金', '土', '日'];
 
-  // 列头直接作为 grid 子项（7 列），保证与日期数字逐列对齐
+  // 列ヘッダーを grid の子要素として直接配置（7 列）。日付数字と列ごとに揃えるため
   let html = heads.map((w) => `<span class="cal-head">${w}</span>`).join('');
   for (let i = 0; i < startOffset; i++) html += '<span class="cal-empty"></span>';
   for (let d = 1; d <= totalDays; d++) {
@@ -67,7 +67,7 @@ function renderCheckinCal(el, days) {
   cal.innerHTML = html;
 }
 
-// 本月打卡记录：横向可滑动标签条（堀与宫村式滑动体验）
+// 今月のチェックイン記録：横にスライド可能なラベルバー（堀宮式スワイプ体験）
 function renderCheckinRecords(el, days) {
   const wrap = el.querySelector('#checkinRecords');
   const bar = el.querySelector('#recordsBarFill');
@@ -100,19 +100,19 @@ function renderCheckinRecords(el, days) {
   }).join('');
 }
 
-// 显示印章；animated=true 时播放盖下动画
+// スタンプを表示。animated=true のとき押印アニメーションを再生
 function showStamp(animated) {
   const stamp = document.getElementById('checkinStamp');
   if (!stamp) return;
   stamp.classList.remove('hidden');
   if (animated) {
     stamp.classList.remove('stamp-in');
-    void stamp.offsetWidth; // 强制重排以重放动画
+    void stamp.offsetWidth; // 強制リフローでアニメーションを再生し直す
     stamp.classList.add('stamp-in');
   }
 }
 
-// 页面滚动视差：hero 上移更快、内容卡轻微上浮（仅绑定一次）
+// ページスクロールのパララックス：hero は速く上昇、コンテンツカードはわずかに浮上（一度だけバインド）
 function bindParallax() {
   const content = document.querySelector('.content');
   if (!content || scrollBound) return;
@@ -211,7 +211,7 @@ async function renderCheckin() {
     </div>
   `;
 
-  // 并行拉取：本月日历 + 统计
+  // 並列取得：今月のカレンダー＋統計
   const [monthDays, stats] = await Promise.all([loadCheckinMonth(), loadCheckinStats()]);
   renderCheckinCal(el, monthDays);
   renderCheckinRecords(el, monthDays);
@@ -259,7 +259,7 @@ async function renderCheckin() {
         ? data
         : (data && (data.message || data.text)) || '打卡成功，保持节奏。';
 
-      // 印章盖下 + 状态切换过渡 + 按钮淡出
+      // 押印＋状態切替トランジション＋ボタンのフェードアウト
       showStamp(true);
       badge.classList.add('done');
       badge.querySelector('.badge-txt').textContent = '済';
@@ -270,7 +270,7 @@ async function renderCheckin() {
       btn.classList.add('fade-out');
       setTimeout(() => btn.classList.add('hidden'), 260);
 
-      // 刷新日历、记录条与统计
+      // カレンダー、記録バー、統計を更新
       const [md, st] = await Promise.all([loadCheckinMonth(), loadCheckinStats()]);
       renderCheckinCal(el, md);
       renderCheckinRecords(el, md);

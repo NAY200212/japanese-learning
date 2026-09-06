@@ -1,9 +1,10 @@
-/* ===== 全局基础（86 机械感） ===== */
+/* ===== グローバル基礎（86 メカ感） ===== */
 * { box-sizing: border-box; }
 
 html, body { margin: 0; padding: 0; }
 
 body {
+
   font-family: "DIN Alternate", "Barlow Condensed", "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", -apple-system, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
   min-height: 100vh;
   color: var(--ink);
@@ -14,25 +15,25 @@ body {
   cursor: var(--cur-default);
 }
 
-/* 机械感滚动条（兜底，暗底橙红） */
+/* メカ感スクロールバー（フォールバック、暗色地にオレンジレッド） */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: #0a0e14; }
 ::-webkit-scrollbar-thumb { background: #232a36; border: 2px solid #0a0e14; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/* 可点击元素统一准星光标 */
+/* クリック可能な要素は照準カーソルに統一 */
 a, button, input[type="submit"], [role="button"], .tab, label.option, .nav-link, .quiz-option, .word-mark-btn, .checkin-btn, .dash-link,
 .seg button, .mark-btn, .pager-btn, .kana-cell, .quiz-opt, .kana-detail .btn-primary {
   cursor: var(--cur-click);
 }
 
-/* ===== 登录页基础（机械） ===== */
+/* ===== ログインページ基礎（メカ） ===== */
 .auth-page {
   display: flex; align-items: center; justify-content: center;
   min-height: 100vh; position: relative;
 }
 
-/* ===== 仪表盘（机械 HUD） ===== */
+/* ===== ダッシュボード（メカ HUD） ===== */
 .cards { display: flex; gap: 18px; flex-wrap: wrap; }
 
 .card {
@@ -81,7 +82,7 @@ a, button, input[type="submit"], [role="button"], .tab, label.option, .nav-link,
   box-shadow: 0 0 12px rgba(255, 106, 61, 0.55);
 }
 
-/* ===== 五十音（机械） ===== */
+/* ===== 五十音（メカ） ===== */
 .kana-toolbar { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; flex-wrap: wrap; }
 
 .seg {
@@ -145,7 +146,7 @@ a, button, input[type="submit"], [role="button"], .tab, label.option, .nav-link,
 .kana-detail .romaji { font-size: 24px; margin-top: 6px; letter-spacing: 0.1em; color: #fff; }
 .kana-detail .btn-primary { width: auto; padding: 10px 24px; }
 
-/* ===== 测验（机械） ===== */
+/* ===== テスト（メカ） ===== */
 .quiz-box {
   position: relative;
   max-width: 580px;
@@ -201,7 +202,7 @@ a, button, input[type="submit"], [role="button"], .tab, label.option, .nav-link,
 }
 .quiz-end-num span { font-size: 22px; color: var(--ink-2); font-weight: 400; background: none; -webkit-text-fill-color: var(--ink-2); }
 
-/* ===== 背单词（机械，保留翻页动画） ===== */
+/* ===== 単語暗記（メカ、ページめくりアニメーション維持） ===== */
 .word-list { display: flex; flex-direction: column; gap: 14px; max-width: 780px; }
 .word-list.word-leave { animation: word-leave 0.28s ease both; }
 .word-list.word-enter { animation: word-enter 0.28s ease both; }
@@ -255,7 +256,7 @@ a, button, input[type="submit"], [role="button"], .tab, label.option, .nav-link,
 .pager-btn:disabled { opacity: 0.4; cursor: default; }
 .pager-info { font-size: 13px; color: var(--ink-2); letter-spacing: 0.1em; }
 
-/* ===== 页面标题（机械） ===== */
+/* ===== ページタイトル（メカ） ===== */
 .page h2 {
   position: relative;
   display: inline-flex; align-items: center; gap: 14px;
@@ -270,7 +271,7 @@ a, button, input[type="submit"], [role="button"], .tab, label.option, .nav-link,
   box-shadow: 0 0 10px rgba(255, 106, 61, 0.6);
 }
 
-/* 顶部/框架/表单兜底（若 HTML 使用旧类名） */
+/* 上部/フレーム/フォームのフォールバック（HTML が旧クラス名を使う場合） */
 .topbar-right { display: flex; align-items: center; gap: 16px; }
 .form-msg { margin-top: 18px; font-size: 13px; color: var(--err); min-height: 18px; }
 .empty-tip { color: var(--ink-2); }
@@ -308,7 +309,7 @@ a, button, input[type="submit"], [role="button"], .tab, label.option, .nav-link,
   --cur-click: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M16%202V30M2%2016H30%22%20stroke%3D%22%23ffb36b%22%20stroke-width%3D%221.5%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%225.5%22%20fill%3D%22%23ff6a3d%22%20fill-opacity%3D%220.9%22%20stroke%3D%22%23e8ecf1%22%20stroke-width%3D%221.2%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%221.8%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E") 16 16, pointer;
 }
 
-/* 机械纹理与 HUD 角标 */
+/* メカ質感テクスチャと HUD コーナーバッジ */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
@@ -325,7 +326,7 @@ body::after {
   mix-blend-mode: screen;
 }
 
-/* HUD 四角刻度 */
+/* HUD 四隅の目盛り */
 .hud-corner {
   position: absolute; width: 14px; height: 14px; pointer-events: none; z-index: 3;
 }
@@ -334,7 +335,7 @@ body::after {
 .hud-corner-bl { bottom: 8px; left: 8px; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
 .hud-corner-br { bottom: 8px; right: 8px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
 
-/* 准星角标 */
+/* 照準コーナーバッジ */
 .cross-mark {
   position: absolute; width: 18px; height: 18px; pointer-events: none; z-index: 3; opacity: 0.7;
 }
@@ -347,7 +348,7 @@ body::after {
 .cross-mark-bl { bottom: 6px; left: 6px; }
 .cross-mark-br { bottom: 6px; right: 6px; }
 
-/* 通用机械卡片 */
+/* 汎用メカカード */
 .card {
   position: relative;
   background: var(--panel);
@@ -369,7 +370,7 @@ body::after {
 .card-note { font-size: 13px; color: var(--ink-2); line-height: 1.7; }
 .card-note b { color: var(--ink); }
 
-/* 状态条 / 进度条 */
+/* ステータスバー / プログレスバー */
 .bar {
   height: 8px; background: rgba(56, 73, 90, 0.35);
   border: 1px solid var(--line); border-radius: 2px; overflow: hidden;
@@ -380,7 +381,7 @@ body::after {
   box-shadow: 0 0 10px rgba(255, 106, 61, 0.55);
 }
 
-/* 通用机械按钮 */
+/* 汎用メカボタン */
 .btn-primary, .btn-ghost {
   position: relative;
   border-radius: 0;
@@ -412,7 +413,7 @@ body::after {
   box-shadow: 0 0 14px rgba(255, 106, 61, 0.25);
 }
 
-/* 表单 */
+/* フォーム */
 input, select, textarea {
   border-radius: 0;
   border: 1px solid var(--line-hi);
@@ -428,7 +429,7 @@ input:focus, select:focus, textarea:focus {
 }
 input::placeholder, textarea::placeholder { color: var(--ink-3); }
 
-/* 标签 */
+/* ラベル */
 .tag, .tag-accent, .tag-ok, .tag-warn, .tag-err {
   display: inline-block; padding: 3px 10px;
   font-size: 12px; letter-spacing: 0.1em;
@@ -440,7 +441,7 @@ input::placeholder, textarea::placeholder { color: var(--ink-3); }
 .tag-warn { color: var(--warm); border-color: var(--warm-line); }
 .tag-err { color: var(--err); border-color: var(--err-line); }
 
-/* 滚动条 */
+/* スクロールバー */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
@@ -450,7 +451,7 @@ input::placeholder, textarea::placeholder { color: var(--ink-3); }
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 106, 61, 0.45); }
 
-/* 基础 */
+/* ベース */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
@@ -477,14 +478,14 @@ h2 { font-size: 22px; }
 h3 { font-size: 18px; }
 h4 { font-size: 15px; }
 
-/* 页面入场 */
+/* ページ入場 */
 .page:not(.hidden) { animation: page-in 0.3s ease both; }
 @keyframes page-in {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 通用卡片入场（标题/卡片淡入上浮 + 橙红辉光） */
+/* 汎用カード入場（タイトル/カードがフェードイン＆浮上＋オレンジレッドのグロー） */
 .reveal {
   animation: reveal-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -494,7 +495,7 @@ h4 { font-size: 15px; }
 }
 .page:not(.hidden) > h2 { animation: reveal-up 0.5s ease both; }
 
-/* 扫描线扫过 */
+/* スキャンラインが走る */
 .scanline { position: relative; overflow: hidden; }
 .scanline::after {
   content: '';
@@ -508,7 +509,7 @@ h4 { font-size: 15px; }
   60%, 100% { transform: translateX(120%); }
 }
 
-/* ===== 登录页 ===== */
+/* ===== ログインページ ===== */
 .auth-wrap {
   min-height: 100vh;
   display: flex; align-items: center; justify-content: center;
@@ -586,7 +587,7 @@ h4 { font-size: 15px; }
 .auth-msg.ok { color: var(--ok); }
 .auth-tip { text-align: center; font-size: 12px; color: var(--ink-3); margin-top: 18px; letter-spacing: 0.08em; }
 
-/* ===== 主框架 ===== */
+/* ===== メインフレーム ===== */
 .layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
 
 .topbar {
@@ -656,10 +657,10 @@ h4 { font-size: 15px; }
   overflow-y: auto;
   padding: 26px 32px 60px;
 }
-.content > .page { max-width: 940px; margin: 0 auto; }
+.content > .page { width: 100%; max-width: 1320px; margin: 0 auto; }
 .page { position: relative; }
 
-/* ===== 仪表盘 ===== */
+/* ===== ダッシュボード ===== */
 .dash-grid {
   display: flex; gap: 18px; flex-wrap: wrap;
   margin-top: 4px;
@@ -753,7 +754,7 @@ h4 { font-size: 15px; }
 .kana-detail { margin-top: 20px; }
 .kana-detail .btn-primary { width: auto; padding: 10px 24px; }
 
-/* ===== 测验 ===== */
+/* ===== テスト ===== */
 .quiz-card { margin-bottom: 18px; }
 .quiz-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; color: var(--ink-2); }
 .quiz-progress .bar { flex: 1; }
@@ -787,7 +788,7 @@ h4 { font-size: 15px; }
 .quiz-result .sub { font-size: 14px; color: var(--ink-2); margin: 8px 0 18px; }
 .quiz-result .btn-primary { padding: 12px 28px; }
 
-/* ===== 背单词 ===== */
+/* ===== 単語暗記 ===== */
 .word-card {
   position: relative;
   background: var(--panel);
@@ -822,7 +823,7 @@ h4 { font-size: 15px; }
 .word-controls .btn-primary { padding: 10px 20px; }
 .word-empty { color: var(--ink-2); padding: 20px 0; }
 
-/* 翻页动画 */
+/* ページめくりアニメーション */
 .word-card.leaving { animation: word-leave 0.28s ease both; }
 .word-card.entering { animation: word-enter 0.28s ease both; }
 @keyframes word-leave {
@@ -833,9 +834,9 @@ h4 { font-size: 15px; }
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-/* ===== 打卡（86 机械感 + 堀与宫村式滑动 + 机械光标） ===== */
+/* ===== チェックイン（86 メカ感＋堀宮式スライド＋メカカーソル） ===== */
 
-/* 机械感配色变量 */
+/* メカ感配色変数 */
 :root {
   --m-dark: #0b0e13;
   --m-panel: #11151c;
@@ -854,13 +855,13 @@ h4 { font-size: 15px; }
   --cur-click: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%229%22%20fill%3D%22rgba%28255%2C106%2C61%2C0.85%29%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.95%29%22%20stroke-width%3D%221.4%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%222.6%22%20fill%3D%22%23fff%22%2F%3E%3Cline%20x1%3D%2216%22%20y1%3D%220%22%20x2%3D%2216%22%20y2%3D%227%22%20stroke%3D%22%23ffd9a0%22%20stroke-width%3D%221.6%22%2F%3E%3Cline%20x1%3D%2216%22%20y1%3D%2225%22%20x2%3D%2216%22%20y2%3D%2232%22%20stroke%3D%22%23ffd9a0%22%20stroke-width%3D%221.6%22%2F%3E%3Cline%20x1%3D%220%22%20y1%3D%2216%22%20x2%3D%227%22%20y2%3D%2216%22%20stroke%3D%22%23ffd9a0%22%20stroke-width%3D%221.6%22%2F%3E%3Cline%20x1%3D%2225%22%20y1%3D%2216%22%20x2%3D%2232%22%20y2%3D%2216%22%20stroke%3D%22%23ffd9a0%22%20stroke-width%3D%221.6%22%2F%3E%3C%2Fsvg%3E") 16 16, pointer;
 }
 
-/* 全局机械感光标 */
+/* グローバルなメカカーソル */
 body { cursor: var(--cur-default); }
 a, button, .tab, .cal-day:not(.future), .checkin-btn, .record-pill,
 .pager-btn, .word-level, .kana-cell, .quiz-opt, input[type="submit"],
 [role="button"], .info-badge, .hero-scroll { cursor: var(--cur-click); }
 
-/* 可点击元素 hover 机械反馈：边框亮起 + 扫描线扫过 */
+/* クリック可能要素のホバー時のメカフィードバック：枠が発光＋スキャンラインが走る */
 a, button, .tab, .cal-day:not(.future), .checkin-btn, .record-pill,
 .pager-btn, .word-level, .kana-cell, .quiz-opt, .info-badge, .hero-scroll {
   position: relative;
@@ -873,7 +874,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
   box-shadow: 0 0 0 1px rgba(255, 106, 61, 0.35), var(--m-glow);
 }
 
-/* --- 86 式：机械感主视觉 --- */
+/* --- 86 式：メカ感メインビジュアル --- */
 .checkin-hero {
   position: relative;
   border-radius: 4px;
@@ -921,7 +922,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
   color: rgba(255, 106, 61, 0.5);
 }
 
-/* 瞄准镜 / 准星装饰 */
+/* スコープ / 照準の装飾 */
 .hero-cross {
   position: absolute; left: 22px; bottom: 20px; width: 64px; height: 64px; pointer-events: none;
 }
@@ -936,7 +937,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
 }
 .hero-cross span::before, .hero-cross span::after { display: none; }
 
-/* 四角刻度装饰 */
+/* 四隅の目盛り装飾 */
 .hero-corner, .hud-corner {
   position: absolute; width: 14px; height: 14px; pointer-events: none;
   border-color: rgba(255, 106, 61, 0.8); border-style: solid; border-width: 0;
@@ -970,7 +971,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* SCROLL 提示 */
+/* SCROLL 表示 */
 .hero-scroll {
   position: absolute; bottom: 16px; right: 22px;
   display: flex; align-items: center; gap: 8px;
@@ -987,7 +988,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
   50% { transform: translateY(4px); opacity: 1; }
 }
 
-/* --- 堀与宫村式：左右分屏（窄屏自动单列堆叠，修复重叠） --- */
+/* --- 堀宮式：左右分割（狭い画面では自動で単列にスタックし、重なりを修正） --- */
 .checkin-split {
   position: relative;
   display: grid;
@@ -1000,7 +1001,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
   transition: transform 0.05s linear;
 }
 
-/* 左：窄信息栏（HUD 面板） */
+/* 左：細い情報バー（HUD パネル） */
 .checkin-info {
   position: relative;
   background: linear-gradient(165deg, var(--m-panel) 0%, var(--m-panel-2) 100%);
@@ -1092,7 +1093,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
 .info-stat-label { font-size: 12px; color: var(--m-ink-2); letter-spacing: 0.1em; }
 .info-stat-divider { width: 1px; height: 40px; background: rgba(255, 255, 255, 0.14); }
 
-/* 右：主日历面板 + 记录条 */
+/* 右：メインカレンダーパネル＋記録バー */
 .checkin-main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 
 .checkin-cal-card {
@@ -1161,7 +1162,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
   font-size: 11px; color: var(--m-ink-2); letter-spacing: 0.14em;
 }
 
-/* --- 堀与宫村式：本月打卡记录横向滑动条 --- */
+/* --- 堀宮式：今月のチェックイン記録の横スライドバー --- */
 .checkin-records {
   position: relative;
   background: linear-gradient(165deg, var(--m-panel) 0%, var(--m-panel-2) 100%);
@@ -1202,7 +1203,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
   transition: width 0.4s ease;
 }
 
-/* 横向滑动容器 + 两侧渐变阴影提示 */
+/* 横スクロールコンテナ＋両端のグラデーション影でヒントを提示 */
 .records-scroll {
   position: relative; z-index: 1;
   overflow-x: auto;
@@ -1235,7 +1236,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
 
 .records-empty { font-size: 12px; color: var(--m-ink-2); letter-spacing: 0.06em; }
 
-/* --- 响应式：修复窄屏重叠/挤压 --- */
+/* --- レスポンシブ：狭い画面での重なり/圧迫を修正 --- */
 @media (max-width: 1100px) {
   .checkin-split { grid-template-columns: 232px 1fr; gap: 16px; margin-top: -16px; padding: 0 14px; }
   .hero-ja { font-size: 34px; }
@@ -1260,7 +1261,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
 }
 
 
-/* ===== 全站机械细节强化（HUD 角标 / 纹理 / 军绿点缀） ===== */
+/* ===== サイト全体のメカディテール強化（HUD コーナーバッジ / テクスチャ / 軍緑のアクセント） ===== */
 .dash-card::before, .kana-cell::before, .quiz-opt::before, .word-card::before {
   content: '';
   position: absolute; top: 6px; left: 6px;
@@ -1294,7 +1295,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
 }
 
 
-/* ===== 五十音全量 + 手写练习（86 机械感，kana.js 新结构） ===== */
+/* ===== 五十音フル＋手書き練習（86 メカ感、kana.js 新構造） ===== */
 .kana-cat-bar { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
 .kana-cat-count { display: inline-block; margin-left: 6px; padding: 1px 6px; font-size: 11px; line-height: 1.4; border-radius: 2px; background: rgba(255,255,255,0.08); color: var(--ink-2); }
 .kana-cat-seg button.active .kana-cat-count { background: rgba(10,14,20,0.35); color: #0a0e14; }
@@ -1357,7 +1358,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
 .kcd-actions .btn-primary, .kcd-actions .btn-ghost { width: auto; padding: 9px 22px; }
 .kcd-msg { min-height: 16px; font-size: 12px; color: var(--err); }
 
-/* ===== 手写练习面板 ===== */
+/* ===== 手書き練習パネル ===== */
 .write-panel {
   position: relative;
   margin-top: 36px;
@@ -1489,7 +1490,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
   .kcd-actions { align-items: flex-start; }
 }
 
-/* 错题本 */
+/* 誤答ノート */
 .wrong-list { display: flex; flex-direction: column; gap: 14px; }
 .wrong-item { padding: 16px 18px; }
 .wrong-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
@@ -1499,7 +1500,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
 .wrong-time { font-size: 12px; color: var(--ink-3); }
 .wrong-master { font-size: 13px; padding: 8px 18px; }
 
-/* 间隔重复背词 SRS */
+/* 間隔反復の単語復習 SRS */
 .srs-btn {
   padding: 9px 16px; border: 1px solid var(--accent-line);
   background: rgba(255,106,61,0.08); color: var(--accent-1);
@@ -1524,7 +1525,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
 .srs-btns { display: flex; justify-content: center; gap: 14px; margin-top: 22px; }
 .srs-btns .mark-btn { min-width: 92px; padding: 11px 0; font-size: 14px; }
 
-/* ===== AI 助手 ===== */
+/* ===== AI アシスタント ===== */
 .ai-head-note { font-size: 12px; color: var(--ink-3); letter-spacing: 0.08em; margin: 0 0 18px; }
 .ai-grid { display: flex; flex-direction: column; gap: 20px; }
 .ai-card { padding: 22px 24px; }
@@ -1579,7 +1580,7 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
   .ai-row { flex-direction: column; gap: 14px; }
 }
 
-/* ===== AI 对话（机械风聊天） ===== */
+/* ===== AI 会話（メカ風チャット） ===== */
 .ai-head-note { color: var(--ink-2); font-size: 13px; margin: -6px 0 18px; letter-spacing: 0.04em; }
 
 .chat-shell {
@@ -1671,3 +1672,114 @@ a:hover, button:hover, .tab:hover, .cal-day:not(.future):hover, .checkin-btn:hov
   font-weight: 700; letter-spacing: 0.1em;
 }
 .chat-send:disabled { opacity: 0.5; transform: none; }
+
+/* ================================================================
+   サイト全体のレスポンシブ幅対応（メカ感を維持）
+   メインコンテンツは利用可能幅を最大に。≤1100 は余白を縮小。≤920 はサイドバーを折りたたんで上部の横ナビゲーションへ、ログインページは縦積みで幅いっぱい。
+   ≤640 はモバイルのオーバーフローを防ぐため内側パディングを絞る。
+   ================================================================ */
+@media (max-width: 1100px) {
+  .topbar { padding: 0 16px; }
+  .content { padding: 22px 24px 56px; }
+  .content > .page { max-width: none; }
+}
+
+@media (max-width: 920px) {
+  /* ---- メインフレーム：サイドバーを折りたたみ、上部の横ナビゲーションへ ---- */
+  .layout { flex-direction: column; }
+  .sidebar {
+    width: 100%; flex: none;
+    height: auto; position: static; top: auto;
+    flex-direction: row; align-items: center;
+    gap: 4px; padding: 8px 12px;
+    border-right: none; border-bottom: 1px solid var(--line);
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+  }
+  .sidebar-title { display: none; }
+  .nav-link {
+    flex: none; white-space: nowrap;
+    padding: 9px 12px; font-size: 13px; letter-spacing: 0.06em; gap: 8px;
+  }
+  .nav-link::before { width: 7px; height: 7px; }
+  .nav-link.active::after { display: none; }
+
+  .content { padding: 20px 18px 56px; }
+  .content > .page { max-width: none; }
+
+  /* 制約付きコンテンツブロックは利用可能幅いっぱいを使う */
+  .kana-table,
+  .kana-detail,
+  .quiz-box,
+  .word-list,
+  .kana-card-detail,
+  .write-prompt,
+  .write-canvas,
+  .chat-shell {
+    max-width: 100%;
+  }
+
+  /* ---- ログインページ：縦積み、幅いっぱい ---- */
+  .auth-page .auth-wrap {
+    flex-direction: column; justify-content: center;
+    gap: 30px; padding: 44px 20px;
+  }
+  .auth-page .auth-wrap > .auth-brand {
+    flex-direction: column; align-items: center; text-align: center;
+    gap: 6px; margin-bottom: 0;
+  }
+  .auth-page .auth-wrap > .auth-brand .brand-mark { width: 48px; height: 48px; font-size: 20px; }
+  .auth-page .auth-wrap > .auth-brand h1 {
+    margin: 10px 0 0; font-size: 26px;
+    letter-spacing: 0.14em; color: #fff; line-height: 1.2;
+  }
+  .auth-page .auth-wrap > .auth-brand p {
+    margin: 6px 0 0; font-size: 13px; line-height: 1.7; color: var(--ink-2);
+  }
+  .auth-page .auth-wrap > main.auth-form { width: 100%; max-width: 400px; }
+}
+
+@media (max-width: 640px) {
+  .topbar { padding: 0 10px; height: 54px; }
+  .topbar-user { gap: 8px; font-size: 12px; }
+  .topbar .brand small, .topbar-brand small { display: none; }
+  .logout-btn { padding: 6px 10px; font-size: 11px; }
+
+  .sidebar { padding: 6px 8px; }
+  .nav-link { padding: 8px 10px; font-size: 12px; gap: 7px; }
+  .content { padding: 16px 12px 48px; }
+
+  .page h2 { font-size: 20px; letter-spacing: 0.12em; margin-bottom: 18px; }
+  .page h2::before { width: 26px; }
+
+  /* 五十音 / テスト / 単語暗記 / 手書きなどのコンポーネントは狭い画面で収束 */
+  .kana-toolbar, .kana-cat-bar { gap: 8px; }
+  .seg button { padding: 7px 12px; font-size: 12px; }
+  .kana-table { gap: 6px; grid-template-columns: 34px repeat(5, 1fr); }
+  .kana-cell { min-height: 62px; }
+  .kana-cell .k { font-size: 22px; }
+  .kana-cell .r { font-size: 11px; }
+  .kana-card-grid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; }
+  .kana-detail, .kana-card-detail { padding: 18px 16px; gap: 18px; }
+  .kcd-big .big { font-size: 42px; }
+
+  .quiz-box { padding: 26px 16px; }
+  .quiz-kana { font-size: 64px; }
+  .quiz-options { grid-template-columns: 1fr; }
+
+  .word-card { flex-wrap: wrap; gap: 14px; padding: 14px 14px; }
+  .word-card .word-main { min-width: 0; }
+  .word-actions, .self-btns { flex-wrap: wrap; gap: 8px; }
+
+  .wrong-foot { flex-wrap: wrap; gap: 8px; }
+  .srs-btns { flex-wrap: wrap; gap: 10px; }
+  .srs-btns .mark-btn { min-width: 0; flex: 1; }
+
+  .auth-page .auth-wrap { gap: 24px; padding: 36px 16px; }
+  .auth-page .auth-wrap > main.auth-form { max-width: 100%; }
+
+  .chat-shell { height: calc(100dvh - 240px); min-height: 62vh; }
+  .chat-bubble { max-width: 92%; }
+  .chat-quick-label { display: none; }
+  .ai-actions { flex-wrap: wrap; }
+}
+

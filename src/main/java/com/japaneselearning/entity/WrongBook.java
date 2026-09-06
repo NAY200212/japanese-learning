@@ -5,14 +5,14 @@ import java.time.LocalDateTime;
 
 @Data
 public class WrongBook {
-    private Integer id;           // 主键
-    private Integer userId;       // 用户ID
-    private Integer questionId;   // 题目ID
-    private Integer wrongCount;   // 累计错题次数
-    private Integer rightCount;   // 累计答对次数
-    private String status;        // 待复习/已掌握
-    private LocalDateTime lastWrongAt; // 最近出错时间
-    // 以下 3 个字段来自 JOIN question 表，仅查询展示用
+    private Integer id;           // 主キー
+    private Integer userId;       // ユーザーID
+    private Integer questionId;   // 問題ID
+    private Integer wrongCount;   // 累計誤答回数
+    private Integer rightCount;   // 累計正解回数
+    private String status;        // 復習待ち/習得済み
+    private LocalDateTime lastWrongAt; // 直近の誤答日時
+    // 以下の 3 フィールドは question テーブルとの JOIN 由来（表示専用）
     private String questionContent;
     private String questionType;
     private String questionLevel;

@@ -18,7 +18,7 @@ public class ExamController {
 
     private final ExamService examService;
 
-    // 构造器注入
+    // コンストラクタインジェクション
     public ExamController(ExamService examService) {
         this.examService = examService;
     }

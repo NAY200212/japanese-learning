@@ -22,14 +22,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * AI 助手实现：调用 DeepSeek（经 Spring AI OpenAiChatModel 自动配置），
- * 相同请求文本结果写 Redis（短 TTL），调用失败抛业务异常由全局异常处理器转友好文案。
+ * AI アシスタントの実装：DeepSeek を呼び出す（Spring AI OpenAiChatModel の自動設定経由）。
+ * 同一リクエスト本文の結果は Redis に書き込む（短い TTL）。呼び出し失敗時は業務例外をスローし、グローバル例外ハンドラーが親しみやすい文言へ変換する。
  */
 @Slf4j
 @Service
 public class AiServiceImpl implements AiService {
 
-    /** AI 结果短缓存：10 分钟，避免相同问题重复计费 */
+    /*AI 結果の短期キャッシュ：10 分。同一質問の重複課金を防ぐ */
     private static final Duration AI_CACHE_TTL = Duration.ofMinutes(10);
 
     private static final String FRIENDLY_ERR = "AI 服务暂时不可用，请稍后重试";
@@ -155,9 +155,9 @@ public class AiServiceImpl implements AiService {
         return cachedOrCall("grammar", sb.toString());
     }
 
-    // ===== 内部工具 =====
+    // ===== 内部ツール =====
 
-    /** 带缓存的 DeepSeek 调用：缓存未命中才真实调用模型；Redis 异常自动降级为直连 */
+    /*キャッシュ付き DeepSeek 呼び出し：キャッシュミス時のみ実際にモデルを呼び出す。Redis 異常時は自動で直結にフォールバック */
     private String cachedOrCall(String type, String prompt) {
         String key = "ai:" + type + ":" + DigestUtils.md5DigestAsHex(prompt.getBytes(StandardCharsets.UTF_8)).substring(0, 16);
         try {

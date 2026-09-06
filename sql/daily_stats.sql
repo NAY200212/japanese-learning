@@ -1,4 +1,4 @@
--- 每日学习统计表（P3 定时任务产出）
+-- 毎日の学習統計テーブル（P3 定期タスクの成果物）
 CREATE TABLE IF NOT EXISTS daily_stats (
   id            INT AUTO_INCREMENT PRIMARY KEY,
   user_id       INT          NOT NULL COMMENT '用户ID',

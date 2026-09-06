@@ -1,4 +1,4 @@
-// 模拟考试页（P2）：JLPT 180 分制计分 + 历史成绩趋势
+// 模擬試験ページ（P2）：JLPT 180 点満点の採点＋履歴成績のトレンド
 let examLevel = 'N5';
 let examQuestions = [];
 let examIndex = 0;
@@ -6,7 +6,7 @@ let examAnswers = [];
 let examLocked = false;
 let examResult = null;
 
-// 本地选项打乱（与 quiz.js 互不干扰）
+// ローカルで選択肢をシャッフル（quiz.js と互いに干渉しない）
 function examShuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -18,7 +18,7 @@ function examShuffle(arr) {
 async function renderExam() {
   const el = document.getElementById('exam');
 
-  // 成绩单页
+  // 成績表ページ
   if (examResult) {
     const r = examResult;
     const acc = r.totalCount ? Math.round((r.correctCount / r.totalCount) * 100) : 0;
@@ -48,7 +48,7 @@ async function renderExam() {
     return;
   }
 
-  // 开始页
+  // 開始ページ
   if (examQuestions.length === 0) {
     el.innerHTML = `
       <h2>模拟考试</h2>
@@ -75,7 +75,7 @@ async function renderExam() {
     return;
   }
 
-  // 提交页
+  // 提出ページ
   if (examIndex >= examQuestions.length) {
     el.innerHTML = `
       <h2>模拟考试 · ${examLevel}</h2>
@@ -95,7 +95,7 @@ async function renderExam() {
     return;
   }
 
-  // 做题页
+  // 解答ページ
   const q = examQuestions[examIndex];
   examLocked = false;
   el.innerHTML = `
@@ -130,9 +130,9 @@ async function startExam() {
       alert('该等级暂无题目');
       return;
     }
-    // 逐题拉详情（带选项）
+    // 問題ごとに詳細を取得（選択肢付き）
     examQuestions = await Promise.all(list.map((q) => api(`/question/${q.id}`)));
-    // 选项打乱 + 剥掉正确答案字段（考试过程不展示对错）
+    // 選択肢をシャッフル＋正解フィールドを除去（試験中は正誤を表示しない）
     examQuestions.forEach((q) => {
       if (Array.isArray(q.options)) {
         examShuffle(q.options);
@@ -166,7 +166,7 @@ async function submitExam() {
   }
 }
 
-// 历史成绩：列表 + 内联 SVG 折线趋势 + 分项平均
+// 履歴成績：リスト＋インライン SVG 折れ線トレンド＋セクション別平均
 async function renderHistory(container) {
   if (!container) return;
   container.innerHTML = '<p class="card-note">加载中…</p>';

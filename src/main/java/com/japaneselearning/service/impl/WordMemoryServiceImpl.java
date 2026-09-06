@@ -16,13 +16,13 @@ public class WordMemoryServiceImpl implements WordMemoryService {
 
     @Override
     public void mark(Integer userId, Integer wordId, String status) {
-        // 1. 先查这个用户对这个词有没有记录
+        // 1. このユーザーがこの単語の記録を持っているか確認
         WordMemory exist = wordMemoryMapper.findByUserAndWord(userId, wordId);
         if (exist != null) {
-            // 2. 有记录 → 只更新状态（改 陌生 → 熟悉）
+            // 2. 記録あり → 状態のみ更新（例：忘れた → 覚えている）
             wordMemoryMapper.updateStatus(exist.getId(), status);
         } else {
-            // 3. 没记录 → 插入新记录
+            // 3. 記録なし → 新規挿入
             WordMemory memory = new WordMemory();
             memory.setUserId(userId);
             memory.setWordId(wordId);

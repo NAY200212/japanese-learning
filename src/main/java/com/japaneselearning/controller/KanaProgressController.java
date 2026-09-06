@@ -18,15 +18,15 @@ public class KanaProgressController {
     @Autowired
     private KanaProgressService kanaProgressService;
 
-    // GET /api/kana/progress 查已掌握列表
+    // GET /api/kana/progress 習得済み一覧を取得
     @GetMapping
     @Operation(summary = "查询已掌握假名列表")
     public Result<List<String>> list(@RequestAttribute("userId") Integer userId) {
         return Result.success(kanaProgressService.listByUser(userId));
     }
 
-    // POST /api/kana/progress 设置掌握状态
-    // body: {"hiragana": "あ", "mastered": true}  true=添加 false=取消
+    // POST /api/kana/progress 習得状態を設定
+    // body: {"hiragana": "あ", "mastered": true}（true=追加、false=解除）
     @PostMapping
     @Operation(summary = "设置假名掌握状态")
     public Result<String> set(@RequestBody Map<String, Object> body,

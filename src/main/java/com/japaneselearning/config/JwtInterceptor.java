@@ -17,19 +17,19 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 放行跨域探路请求
+        // CORS プリフライトリクエストを許可
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
-        // 1. 取 Authorization 请求头，约定格式 "Bearer <token>"
+        // 1. Authorization ヘッダーを取得。形式は "Bearer <token>"
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.setStatus(401);
             return false;
         }
-        // 2. 去掉 "Bearer " 前缀（7 个字符）
+        // 2. "Bearer " プレフィックス（7 文字）を除去
         String token = authHeader.substring(7);
-        // 3. 验 token，取出 userId 塞进 request
+        // 3. token を検証し、userId を request に格納
         try {
             Long userId = jwtUtil.getUserIdFromToken(token);
             request.setAttribute("userId", userId);

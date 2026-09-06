@@ -1,7 +1,7 @@
-// 登录 / 注册页逻辑
+// ログイン / 登録ページのロジック
 const $ = (s) => document.querySelector(s);
 
-// tab 切换
+// タブ切り替え
 document.querySelectorAll('.tab').forEach((btn) => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach((b) => b.classList.remove('active'));
@@ -13,7 +13,7 @@ document.querySelectorAll('.tab').forEach((btn) => {
   });
 });
 
-// 登录
+// ログイン
 $('#loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const fd = new FormData(e.target);
@@ -35,7 +35,7 @@ $('#loginForm').addEventListener('submit', async (e) => {
   }
 });
 
-// 注册
+// 登録
 $('#registerForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const fd = new FormData(e.target);

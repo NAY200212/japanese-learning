@@ -17,7 +17,7 @@ public class WordServiceImpl implements WordService {
     @Override
     @Cacheable(cacheNames = "word:list", key = "'level:' + (#level ?: 'ALL') + ':page:' + #page + ':size:' + #size")
     public List<Word> findByLevel(String level, int page, int size) {
-        int offset = (page - 1) * size;  // 页码转偏移量
+        int offset = (page - 1) * size;  // ページ番号をオフセットに変換
         return wordMapper.findByLevel(level, offset, size);
     }
 

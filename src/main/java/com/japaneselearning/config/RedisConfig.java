@@ -20,7 +20,7 @@ import java.time.Duration;
 @EnableCaching
 public class RedisConfig {
 
-    // 自定义 ObjectMapper：注册 JavaTimeModule，否则 LocalDateTime 无法序列化进 Redis
+    // カスタム ObjectMapper：JavaTimeModule を登録。登録しないと LocalDateTime を Redis にシリアライズできない
     private ObjectMapper redisObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());

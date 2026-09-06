@@ -1,5 +1,5 @@
--- 为缺失选项的 90 道题补充选项（每题 4 个：1 正确 + 3 干扰项）
--- 正确选项 is_correct=1，其余 0；前端渲染时会打乱顺序
+-- 選択肢が不足している 90 問に選択肢を補充（各 4 つ：正解 1 + 誤答 3）
+-- 正解の選択肢は is_correct=1、その他は 0。フロントエンド描画時に順番をシャッフルする
 USE japanese_learning;
 
 INSERT INTO question_option (question_id, content, is_correct) VALUES

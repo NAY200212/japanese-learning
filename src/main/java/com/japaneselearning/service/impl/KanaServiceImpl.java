@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class KanaServiceImpl implements KanaService {
 
-    // 46 个清音数据（平假名, 片假名, 罗马音）
+    // 清音 46 個のデータ（平仮名、片仮名、ローマ字）
     private static final List<Kana> KANA_LIST = new ArrayList<>();
 
     static {
@@ -81,10 +81,10 @@ public class KanaServiceImpl implements KanaService {
     @Override
     public List<Kana> getRandom(int count) {
         List<Kana> copy = new ArrayList<>(KANA_LIST);
-        Collections.shuffle(copy);          // 打乱顺序
+        Collections.shuffle(copy);          // 順番をシャッフル
         if (count >= copy.size()) {
-            return copy;                    // count 超过总数就全给
+            return copy;                    // count が総数を超える場合は全部返す
         }
-        return copy.subList(0, count);      // 取前 count 个
+        return copy.subList(0, count);      // 先頭から count 個を取得
     }
 }

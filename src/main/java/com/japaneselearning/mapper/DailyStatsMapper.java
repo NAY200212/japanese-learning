@@ -21,7 +21,7 @@ public interface DailyStatsMapper {
             "wrong_count = #{wrongCount}, checkin_count = #{checkinCount} WHERE id = #{id}")
     int update(DailyStats stats);
 
-    // 当天有学习活动的用户列表（打卡/考试/错题 三表去重）
+    // 当日に学習アクティビティのあるユーザー一覧（チェックイン/試験/誤答の 3 テーブルを重複排除）
     @Select("SELECT DISTINCT user_id FROM daily_checkin " +
             "UNION SELECT DISTINCT user_id FROM exam_record " +
             "UNION SELECT DISTINCT user_id FROM wrong_book")

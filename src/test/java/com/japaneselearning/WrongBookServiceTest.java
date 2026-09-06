@@ -25,7 +25,7 @@ public class WrongBookServiceTest {
 
     @Test
     void testListByUser() {
-        // 1. 准备：造 2 条错题数据
+        // 1. 準備：誤答データを 2 件作成
         WrongBook wb1 = new WrongBook();
         wb1.setId(1);
         wb1.setQuestionId(5);
@@ -33,16 +33,16 @@ public class WrongBookServiceTest {
         wb2.setId(2);
         wb2.setQuestionId(8);
 
-        // 2. mock：当 mapper.listByUserPage(1, 0, MAX) 被调用时返回这 2 条
+        // 2. mock：mapper.listByUserPage(1, 0, MAX) が呼ばれたらこの 2 件を返す
         when(wrongBookMapper.listByUserPage(1, 0, Integer.MAX_VALUE)).thenReturn(Arrays.asList(wb1, wb2));
 
-        // 3. 执行
+        // 3. 実行
         List<WrongBook> list = wrongBookService.listByUser(1);
 
-        // 4. 断言：数量 2、第一条 questionId 是 5
+        // 4. アサート：件数 2、先頭の questionId は 5
         assertEquals(2, list.size());
         assertEquals(5, list.get(0).getQuestionId());
-        // 5. 验证 mapper 恰好被调用一次
+        // 5. mapper がちょうど 1 回呼ばれたことを検証
         verify(wrongBookMapper, times(1)).listByUserPage(1, 0, Integer.MAX_VALUE);
     }
 
@@ -52,6 +52,6 @@ public class WrongBookServiceTest {
         wrongBookService.markMastered(1, 5);
         verify(wrongBookMapper).markMastered(1, 5);
 
-        // 验证 markMastered 调用后 mapper.markMastered(1, 5) 被执行
+        // markMastered 呼び出し後に mapper.markMastered(1, 5) が実行されることを検証
     }
 }

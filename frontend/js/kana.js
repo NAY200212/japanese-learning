@@ -1,8 +1,8 @@
-// ===== 五十音全量 + 手写默写练习（86 机械感） =====
-// 数据：清音 46 + 浊音 20 + 半浊音 5 + 拗音 33 = 104 个假名
-// 功能：分类 tab 浏览（点击朗读/查看详情/清音支持掌握标记）+ 手写练习（临摹/假名默写/单词默写）
-// 判分：优先 navigator.handwriting（Chrome on-device），不可用降级「对照自评」
-// 兼容：app.js 直接调用 renderKana()；后端不可用时降级为纯本地展示
+// ===== 五十音フル＋手書き書き取り練習（86 メカ感） =====
+// データ：清音 46＋濁音 20＋半濁音 5＋拗音 33＝104 個の仮名
+// 機能：分類タブで閲覧（クリックで発音/詳細表示、清音は習得マーク対応）＋手書き練習（なぞり/仮名書き取り/単語書き取り）
+// 採点：navigator.handwriting（Chrome on-device）優先。利用不可なら「見比べて自己採点」へフォールバック
+// 互換：app.js が renderKana() を直接呼び出し。バックエンド利用不可時は純ローカル表示へフォールバック
 
 const KANA_CATS = [
   { id: 'seion', label: '清音', sub: 'SEION' },
@@ -12,7 +12,7 @@ const KANA_CATS = [
 ];
 const KANA_CAT_MAP = Object.fromEntries(KANA_CATS.map((c) => [c.id, c]));
 
-// 字段：h 平假名 / k 片假名 / r 罗马音 / cat 分类 / sc 笔画数 / ex 示例词(假名) / ej 示例词(汉字,可空) / ec 示例词(中文)
+// フィールド：h 平仮名 / k 片仮名 / r ローマ字 / cat 分類 / sc 画数 / ex 例示語(仮名) / ej 例示語(漢字、空可) / ec 例示語(中国語)
 const KANA_DATA = [
   // ===== 清音 46 =====
   { h: 'あ', k: 'ア', r: 'a', cat: 'seion', sc: 3, ex: 'あめ', ej: '雨', ec: '雨' },
@@ -61,7 +61,7 @@ const KANA_DATA = [
   { h: 'わ', k: 'ワ', r: 'wa', cat: 'seion', sc: 2, ex: 'わたし', ej: '私', ec: '我' },
   { h: 'を', k: 'ヲ', r: 'wo', cat: 'seion', sc: 3, ex: 'を', ej: 'を', ec: '助词' },
   { h: 'ん', k: 'ン', r: 'n', cat: 'seion', sc: 1, ex: 'さん', ej: '三', ec: '三' },
-  // ===== 浊音 20 =====
+  // ===== 濁音 20 =====
   { h: 'が', k: 'ガ', r: 'ga', cat: 'dakuon', sc: 3, ex: 'がっこう', ej: '学校', ec: '学校' },
   { h: 'ぎ', k: 'ギ', r: 'gi', cat: 'dakuon', sc: 4, ex: 'ぎんこう', ej: '銀行', ec: '银行' },
   { h: 'ぐ', k: 'グ', r: 'gu', cat: 'dakuon', sc: 1, ex: 'ぐうぜん', ej: '偶然', ec: '偶然' },
@@ -82,7 +82,7 @@ const KANA_DATA = [
   { h: 'ぶ', k: 'ブ', r: 'bu', cat: 'dakuon', sc: 3, ex: 'ぶんか', ej: '文化', ec: '文化' },
   { h: 'べ', k: 'ベ', r: 'be', cat: 'dakuon', sc: 3, ex: 'べんきょう', ej: '勉強', ec: '学习' },
   { h: 'ぼ', k: 'ボ', r: 'bo', cat: 'dakuon', sc: 4, ex: 'ぼうし', ej: '帽子', ec: '帽子' },
-  // ===== 半浊音 5 =====
+  // ===== 半濁音 5 =====
   { h: 'ぱ', k: 'パ', r: 'pa', cat: 'handakuon', sc: 3, ex: 'ぱん', ej: 'パン', ec: '面包' },
   { h: 'ぴ', k: 'ピ', r: 'pi', cat: 'handakuon', sc: 4, ex: 'ぴあの', ej: 'ピアノ', ec: '钢琴' },
   { h: 'ぷ', k: 'プ', r: 'pu', cat: 'handakuon', sc: 3, ex: 'ぷれぜんと', ej: 'プレゼント', ec: '礼物' },
@@ -124,7 +124,7 @@ const KANA_DATA = [
   { h: 'ぴょ', k: 'ピョ', r: 'pyo', cat: 'youon', sc: 4, ex: 'ぴょんぴょん', ej: 'ぴょんぴょん', ec: '蹦蹦跳跳' },
 ];
 
-// ===== 内置 N5 单词表（假名 + 中文释义，单词默写用） =====
+// ===== 内蔵 N5 単語表（仮名＋中国語訳、単語書き取り用） =====
 const WRITE_WORDS = [
   { kana: 'わたし', kanji: '私', cn: '我' },
   { kana: 'がくせい', kanji: '学生', cn: '学生' },
@@ -168,21 +168,21 @@ const WRITE_WORDS = [
   { kana: 'きょう', kanji: '今日', cn: '今天' },
 ];
 
-// ===== 状态 =====
-let kanaCat = 'seion';        // 当前分类 tab
-let kanaMastered = [];        // 已掌握假名（后端数据，仅清音可用）
-let kanaSelected = null;      // 当前选中的假名（详情面板）
+// ===== 状態 ===== 
+let kanaCat = 'seion';        // 現在の分類タブ
+let kanaMastered = [];        // 習得済みの仮名（バックエンドのデータ。清音のみ有効）
+let kanaSelected = null;      // 現在選択中の仮名（詳細パネル）
 let writeMode = 'trace';      // trace | kana | word
-let writePool = 'cat';        // cat=当前分类 | all=全部
+let writePool = 'cat';        // cat=現在の分類 | all=すべて
 let writeStats = { correct: 0, total: 0 };
-let writeCurrent = null;      // 当前题目
-let writeStrokes = [];        // 手写笔画 [{id,color,width,points:[{x,y,t}]}]
-let writeColor = '#f2f4f8';   // 笔迹颜色
-let writeWidth = 6;           // 笔迹粗细
-let writeDrawing = false;     // 是否正在绘制
+let writeCurrent = null;      // 現在の問題
+let writeStrokes = [];        // 手書きのストローク [{id,color,width,points:[{x,y,t}]}]
+let writeColor = '#f2f4f8';   // ストロークの色
+let writeWidth = 6;           // ストロークの太さ
+let writeDrawing = false;     // 描画中かどうか
 let writeStrokeId = 0;
 
-// ===== 工具函数 =====
+// ===== ユーティリティ関数 =====
 function kanaOfCat(cat) {
   return KANA_DATA.filter((k) => k.cat === cat);
 }
@@ -199,21 +199,21 @@ function speak(text) {
     u.rate = 0.4;
     speechSynthesis.cancel();
     speechSynthesis.speak(u);
-  } catch (e) { /* 静默降级 */ }
+  } catch (e) { /* 静かにフォールバック */ }
 }
 
-// 平假名 -> 片假名（用于归一化比较）
+// 平仮名 -> 片仮名（正規化比較用）
 function toKatakana(s) {
   return String(s || '').replace(/[\u3041-\u3096]/g, (ch) =>
     String.fromCharCode(ch.charCodeAt(0) + 0x60)
   );
 }
-// 答案归一化：去除空白/分隔符，统一片假名
+// 回答の正規化：空白/区切りを除去し、片仮名に統一
 function normAnswer(s) {
   return toKatakana(s).replace(/[\s\-・、。.!！?？]/g, '');
 }
 
-// ===== 后端掌握进度（失败静默降级） =====
+// ===== バックエンドの習得進捗（失敗時は静かにフォールバック） =====
 async function loadKanaProgress() {
   try {
     const list = await api('/kana/progress');
@@ -223,7 +223,7 @@ async function loadKanaProgress() {
   }
 }
 
-// ===== 主渲染（app.js 调用入口） =====
+// ===== メインレンダリング（app.js が呼び出すエントリ） =====
 async function renderKana() {
   const el = document.getElementById('kana');
   el.innerHTML = `
@@ -236,7 +236,7 @@ async function renderKana() {
   renderWritePanel();
 }
 
-// ===== 一、假名浏览（分类 tab + 卡片网格） =====
+// ===== 一、仮名ブラウズ（分類タブ＋カードグリッド） =====
 function renderKanaBrowser() {
   const wrap = document.getElementById('kanaBrowser');
   if (!wrap) return;
@@ -271,7 +271,7 @@ function renderKanaBrowser() {
     <div class="kana-card-detail hidden" id="kanaCardDetail"></div>
   `;
 
-  // tab 切换
+  // タブ切り替え
   wrap.querySelectorAll('.kana-cat-seg button').forEach((btn) => {
     btn.addEventListener('click', () => {
       kanaCat = btn.dataset.cat;
@@ -280,7 +280,7 @@ function renderKanaBrowser() {
     });
   });
 
-  // 卡片点击：详情 + 朗读
+  // カードクリック：詳細表示＋発音
   const detail = wrap.querySelector('#kanaCardDetail');
   wrap.querySelectorAll('.kana-card[data-h]').forEach((card) => {
     card.addEventListener('click', () => {
@@ -338,12 +338,12 @@ function renderKanaBrowser() {
   });
 }
 
-// ===== 二、手写练习 =====
+// ===== 二、手書き練習 =====
 function renderWritePanel() {
   const wrap = document.getElementById('writePanel');
   if (!wrap) return;
 
-  // 重建面板前重置绘制状态，避免旧画布销毁时 pointerup 丢失导致状态卡死
+  // パネル再構築前に描画状態をリセットし、旧キャンバス破棄時に pointerup が失われて状態が固まるのを防ぐ
   writeDrawing = false;
   if (window.__kanaRafPending) {
     window.__kanaRafPending = false;
@@ -426,7 +426,7 @@ function renderWritePanel() {
     </div>
   `;
 
-  // 模式 / 题库切换：只更新高亮与重新出题，不重建整块 DOM（避免重复初始化与卡顿）
+  // モード / 問題集の切り替え：ハイライト更新と再出題のみ行い、DOM 全体は再構築しない（重複初期化とカクつきを回避）
   wrap.querySelectorAll('.write-mode-seg button').forEach((btn) => {
     btn.addEventListener('click', () => {
       if (writeMode === btn.dataset.mode) return;
@@ -450,12 +450,12 @@ function renderWritePanel() {
   nextWriteQuestion(wrap);
 }
 
-// 获取当前题库（假名题）
+// 現在の問題集を取得（仮名問題）
 function writeKanaPool() {
   return writePool === 'all' ? KANA_DATA.slice() : kanaOfCat(kanaCat);
 }
 
-// 下一题
+// 次の問題
 function nextWriteQuestion(wrap) {
   if (!wrap) wrap = document.getElementById('writePanel');
   if (!wrap) return;
@@ -476,7 +476,7 @@ function nextWriteQuestion(wrap) {
     writeCurrent = { type: 'trace', h: k.h, k: k.k, r: k.r, ex: k.ex, ej: k.ej, ec: k.ec, sc: k.sc, cat: k.cat };
   }
 
-  // 出题面板
+  // 出題パネル
   const t = wrap.querySelector('#writeTarget');
   const q = wrap.querySelector('#writeQuestion');
   const snd = wrap.querySelector('#writeSoundBtn');
@@ -506,17 +506,17 @@ function nextWriteQuestion(wrap) {
 
   if (snd) snd.onclick = () => speak(writeCurrent.type === 'word' ? writeCurrent.kana : (writeCurrent.h || writeCurrent.r));
 
-  // 重绘画布（临摹模式画底稿）
+  // キャンバスを再描画（なぞりモードでは下書きを描く）
   drawWriteCanvas(wrap);
 }
 
-// ===== Canvas 手写板 =====
+// ===== Canvas 手書きボード =====
 function initWriteBoard(wrap) {
   const canvas = wrap.querySelector('#writeCanvas');
   if (!canvas) return;
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
-  if (rect.width <= 0 || rect.height <= 0) return; // 布局未完成时跳过，避免 0 尺寸画布
+  if (rect.width <= 0 || rect.height <= 0) return; // レイアウト未完了ならスキップし、0 サイズのキャンバスを回避
   canvas.width = rect.width * dpr;
   canvas.height = rect.height * dpr;
   canvas.style.touchAction = 'none';
@@ -549,7 +549,7 @@ function initWriteBoard(wrap) {
     const st = writeStrokes[writeStrokes.length - 1];
     const p = getPos(e);
     st.points.push({ x: p.x, y: p.y, t: performance.now() });
-    // RAF 节流：高频 pointermove 只保留每帧最后一次重绘，避免主线程过载
+    // RAF スロットル：高頻度 pointermove は毎フレーム最後の再描画だけを残し、メインスレッドの過負荷を防ぐ
     if (window.__kanaRafPending) return;
     window.__kanaRafPending = true;
     requestAnimationFrame(() => {
@@ -563,7 +563,7 @@ function initWriteBoard(wrap) {
     writeDrawing = false;
     const st = writeStrokes[writeStrokes.length - 1];
     if (st && st.points.length < 2) {
-      // 单击：画一个点
+      // シングルクリック：点を 1 つ描く
       const p = st.points[0];
       st.points.push({ x: p.x + 0.1, y: p.y + 0.1, t: p.t + 1 });
     }
@@ -571,43 +571,43 @@ function initWriteBoard(wrap) {
   canvas.addEventListener('pointerup', endStroke);
   canvas.addEventListener('pointercancel', endStroke);
 
-  // 颜色
+  // 色
   wrap.querySelectorAll('.write-color').forEach((btn) => {
     btn.addEventListener('click', () => {
       writeColor = btn.dataset.color;
       wrap.querySelectorAll('.write-color').forEach((b) => b.classList.toggle('active', b === btn));
     });
   });
-  // 粗细
+  // 太さ
   wrap.querySelectorAll('.write-size').forEach((btn) => {
     btn.addEventListener('click', () => {
       writeWidth = Number(btn.dataset.size);
       wrap.querySelectorAll('.write-size').forEach((b) => b.classList.toggle('active', b === btn));
     });
   });
-  // 撤销
+  // 元に戻す
   wrap.querySelector('#writeUndo').addEventListener('click', () => {
     writeStrokes.pop();
     drawWriteCanvas(wrap);
   });
-  // 清除
+  // クリア
   wrap.querySelector('#writeClear').addEventListener('click', () => {
     writeStrokes = [];
     writeStrokeId = 0;
     drawWriteCanvas(wrap);
   });
-  // 提交
+  // 提出
   wrap.querySelector('#writeSubmit').addEventListener('click', () => submitWrite(wrap));
-  // 下一题
+  // 次の問題
   wrap.querySelector('#writeNext').addEventListener('click', () => nextWriteQuestion(wrap));
-  // 重置统计
+  // 統計をリセット
   wrap.querySelector('#writeReset').addEventListener('click', () => {
     writeStats = { correct: 0, total: 0 };
     updateWriteStats(wrap);
   });
 
-  // 窗口尺寸变化时重建画布：只注册一次（守卫标志），
-  // 避免 renderWritePanel / renderKana 反复重建后监听器无限累积导致卡顿
+  // ウィンドウサイズ変更時はキャンバスを再構築：登録は一度だけ（ガードフラグ）、
+  // renderWritePanel / renderKana を繰り返し再構築してもリスナーが無限に蓄積してカクつくのを防ぐ
   if (!window.__kanaResizeBound) {
     window.__kanaResizeBound = true;
     window.addEventListener('resize', () => {
@@ -626,7 +626,7 @@ function initWriteBoard(wrap) {
   }
 }
 
-// 绘制画布：底稿（临摹模式）+ 笔迹
+// 描画キャンバス：下書き（なぞりモード）＋ストローク
 function drawWriteCanvas(wrap, incremental) {
   if (!wrap) wrap = document.getElementById('writePanel');
   if (!wrap) return;
@@ -636,10 +636,10 @@ function drawWriteCanvas(wrap, incremental) {
   const rect = canvas.getBoundingClientRect();
   const W = rect.width, H = rect.height;
 
-  // 增量绘制：只画当前笔画新增的一段，跳过清屏与底稿（旧内容已画过）
+  // 差分描画：現在のストロークの新規部分だけを描き、クリアと下書きをスキップ（旧内容は描画済み）
   if (incremental && writeStrokes.length > 0) {
     const st = writeStrokes[writeStrokes.length - 1];
-    // 从 start-1 开始画，补齐上一帧末尾到本帧起点的连接段，避免笔画断裂
+    // start-1 から描き始め、前フレーム末尾から本フレーム始点への接続部分を補完し、ストロークの断裂を防ぐ
     const start = Math.max(0, (st.drawnPoints || 0) - 1);
     if (start < st.points.length) {
       ctx.save();
@@ -659,7 +659,7 @@ function drawWriteCanvas(wrap, incremental) {
 
   ctx.clearRect(0, 0, W, H);
 
-  // 十字参考线
+  // 十字の参照線
   ctx.strokeStyle = 'rgba(255,255,255,0.07)';
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -667,7 +667,7 @@ function drawWriteCanvas(wrap, incremental) {
   ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2);
   ctx.stroke();
 
-  // 临摹底稿
+  // なぞり用の下書き
   if (writeCurrent && writeCurrent.type === 'trace') {
     ctx.save();
     ctx.font = '110px "Hiragino Sans", "Yu Gothic UI", sans-serif';
@@ -678,7 +678,7 @@ function drawWriteCanvas(wrap, incremental) {
     ctx.restore();
   }
 
-  // 笔迹
+  // ストローク
   writeStrokes.forEach((st) => {
     if (!st.points.length) return;
     ctx.save();
@@ -691,24 +691,24 @@ function drawWriteCanvas(wrap, incremental) {
     for (let i = 1; i < st.points.length; i++) ctx.lineTo(st.points[i].x, st.points[i].y);
     ctx.stroke();
     ctx.restore();
-    // 全量重绘后同步增量游标，保证后续增量绘制起点正确
+    // 全量再描画後に差分カーソルを同期し、以後の差分描画の始点が正しいことを保証
     st.drawnPoints = st.points.length;
   });
 }
 
-// ===== 判分 =====
-// ---- 本地模板匹配自动判分（不依赖浏览器 handwriting API，Chrome/Safari 均可用）----
+// ===== 採点 =====
+// ---- ローカルテンプレートマッチング自動採点（ブラウザの handwriting API 非依存。Chrome/Safari とも利用可）----
 const KANA_TPL_SIZE = 96;
 const kanaTplCache = new Map();
 
-// 用系统字体在离屏画布渲染假名，生成二值模板（raw=原始笔画，mask=膨胀1圈容错）
-// 模板采用描边渲染 + bbox 归一化，与用户笔迹表示同构（线条对线条）
+// システムフォントでオフスクリーンキャンバスに仮名を描画し、二値テンプレートを生成（raw=元ストローク、mask=1 周膨張で誤差許容）
+// テンプレートはストローク描画＋bbox 正規化で生成し、ユーザーストロークと同型（線と線で比較）
 function getKanaTemplateBitmap(ch) {
   if (kanaTplCache.has(ch)) return kanaTplCache.get(ch);
   const S = KANA_TPL_SIZE;
   const font = '700 ' + Math.round(S * 0.74) + 'px "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif';
 
-  // 第一遍：填充渲染量出字形 bbox
+  // 1 回目：塗りつぶし描画で字形の bbox を計測
   const c1 = document.createElement('canvas');
   c1.width = S; c1.height = S;
   const ctx1 = c1.getContext('2d', { willReadFrequently: true });
@@ -733,7 +733,7 @@ function getKanaTemplateBitmap(ch) {
   const bw = Math.max(1, maxX - minX + 1);
   const bh = Math.max(1, maxY - minY + 1);
 
-  // 第二遍：描边渲染字形（与用户笔迹同为线条，线宽一致）
+  // 2 回目：ストローク描画で字形を描画（ユーザーストロークと同じく線・線幅一致）
   const c2 = document.createElement('canvas');
   c2.width = S; c2.height = S;
   const ctx2 = c2.getContext('2d', { willReadFrequently: true });
@@ -746,7 +746,7 @@ function getKanaTemplateBitmap(ch) {
   ctx2.lineJoin = 'round';
   ctx2.strokeText(ch, S / 2, S / 2 + S * 0.02);
 
-  // 裁剪字形并归一化到 0.62*S 居中（与用户笔迹 bbox 归一化一致）
+  // 字形を切り出して 0.62*S に正規化し中央へ（ユーザーストロークの bbox 正規化と一致させる）
   const out = document.createElement('canvas');
   out.width = S; out.height = S;
   const octx = out.getContext('2d');
@@ -778,7 +778,7 @@ function getKanaTemplateBitmap(ch) {
   return kanaTplCache.get(ch);
 }
 
-// 把用户笔迹平移+缩放归一化到模板画布，返回二值 mask
+// ユーザーストロークを平行移動＋スケールでテンプレートキャンバスに正規化し、二値 mask を返す
 function renderUserStrokesBitmap(wrap) {
   const canvas = wrap.querySelector('#writeCanvas');
   if (!canvas) return null;
@@ -826,7 +826,7 @@ function renderUserStrokesBitmap(wrap) {
   return mask;
 }
 
-// 双向命中率评分：hitU=用户笔迹落在模板膨胀区的比例（容错），hitT=模板被用户精确覆盖的比例（区分）
+// 双方向ヒット率スコア：hitU=ユーザーストロークがテンプレート膨張領域に入る割合（許容）、hitT=テンプレートがユーザーに正確に覆われた割合（区別）
 function matchKanaScore(userMask, ch) {
   const tpl = getKanaTemplateBitmap(ch);
   const S = KANA_TPL_SIZE;
@@ -841,11 +841,11 @@ function matchKanaScore(userMask, ch) {
   }
   const hitU = userTotal ? interE / userTotal : 0;
   const hitT = tplTotal ? interR / tplTotal : 0;
-  // hitT 为区分项（用户是否覆盖了模板全部笔画），权重更高；hitU 用膨胀 mask 容错轻微偏移
+  // hitT が区別要素（ユーザーがテンプレートの全ストロークを覆ったか）。重みを高く。hitU は膨張 mask で軽微なズレを許容
   return { score: 0.3 * hitU + 0.7 * hitT, hitU, hitT };
 }
 
-// 多候选识别：优先在笔画数匹配的假名中选最高分（形近字笔画数往往不同，可排除），分数过低时回退全量最优
+// 複数候補認識：まず画数が一致する仮名から最高点を選ぶ（似た字形は画数が異なることが多く除外可能）。点数が低すぎる場合は全候補の最良へフォールバック
 function bestKanaMatch(userMask, strokeCount) {
   let best = null, fallback = null;
   for (const d of KANA_DATA) {
@@ -872,7 +872,7 @@ async function submitWrite(wrap) {
     return;
   }
 
-  // 临摹模式：无判分，仅提示完成
+  // なぞりモード：採点なし、完了表示のみ
   if (writeCurrent.type === 'trace') {
     fb.className = 'write-feedback ok';
     fb.textContent = '已记录笔迹。可继续跟写，或点「下一题」换一个假名。';
@@ -881,7 +881,7 @@ async function submitWrite(wrap) {
 
   const answer = writeCurrent.type === 'word' ? writeCurrent.kana : writeCurrent.h;
 
-  // 1) 自动识别（Chrome 实验性 API）
+  // 1) 自動認識（Chrome の実験的 API）
   let recognized = null;
   let usedAuto = false;
   try {
@@ -911,7 +911,7 @@ async function submitWrite(wrap) {
 
   const target = normAnswer(answer);
 
-  // 2) 单词模式：多字组合不做模板匹配，无 handwriting 时维持「对照自评」
+  // 2) 単語モード：複数文字の組み合わせはテンプレートマッチングせず、handwriting が無ければ「見比べて自己採点」を維持
   if (writeCurrent.type === 'word') {
     const wMatch = usedAuto && recognized !== null && normAnswer(recognized) === target;
     writeStats.total += 1;
@@ -944,7 +944,7 @@ async function submitWrite(wrap) {
     return;
   }
 
-  // 3) 假名模式：handwriting 优先；不可用/失败时用本地模板匹配自动判分（Safari 同样生效）
+  // 3) 仮名モード：handwriting 優先。利用不可/失敗時はローカルテンプレートマッチングの自動採点（Safari でも有効）
   const userMask = renderUserStrokesBitmap(wrap);
 
   writeStats.total += 1;
@@ -979,7 +979,7 @@ async function submitWrite(wrap) {
     }
   }
 
-  // 4) 兜底：对照自评
+  // 4) フォールバック：見比べて自己採点
   fb.className = 'write-feedback self';
   fb.innerHTML = `
     <div class="self-answer">正确答案：<b>${answer}</b>（${writeCurrent.k}）</div>

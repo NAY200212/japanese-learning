@@ -18,7 +18,7 @@ public interface ExamRecordMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(ExamRecord record);
 
-    // 分页查历史成绩（按时间倒序）
+    // 履歴成績をページング取得（時間降順）
     @Select("<script>" +
             "SELECT * FROM exam_record WHERE user_id = #{userId} " +
             "<if test='level != null and level != \"\"'> AND level = #{level}</if> " +
@@ -36,7 +36,7 @@ public interface ExamRecordMapper {
     long countByUser(@Param("userId") Integer userId,
                      @Param("level") String level);
 
-    // 分项平均分统计（趋势图/仪表盘用）
+    // セクション別平均点の集計（トレンドグラフ/ダッシュボード用）
     @Select("SELECT COUNT(*) AS totalCount, " +
             "COALESCE(AVG(total_score),0) AS avgTotal, " +
             "COALESCE(AVG(vocab_score),0) AS avgVocab, " +

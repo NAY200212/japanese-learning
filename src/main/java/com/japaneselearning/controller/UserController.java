@@ -17,15 +17,15 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
-    private JwtUtil jwtUtil;   // 加在 userService 下面
+    private JwtUtil jwtUtil;   // userService の下に追加
 
-    // 登录：POST /api/user/login
+    // ログイン：POST /api/user/login
     @PostMapping("/login")
     @Operation(summary = "用户登录")
     public Result<String> login(@RequestBody User user) {
         User loginUser = userService.login(user.getUsername(), user.getPassword());
         if (loginUser != null) {
-            // 登录成功 → 签发 token 返回给前端
+            // ログイン成功 → token を発行してフロントエンドへ返す
             String token = jwtUtil.generateToken(loginUser.getId(), loginUser.getUsername());
             return Result.success(token);
         }
@@ -33,7 +33,7 @@ public class UserController {
     }
 
 
-    // 注册：POST /api/user/register
+    // 登録：POST /api/user/register
     @PostMapping("/register")
     @Operation(summary = "用户注册")
     public Result<String> register(@RequestBody User user) {
@@ -44,7 +44,7 @@ public class UserController {
         return Result.error("用户名已存在");
     }
 
-    // 当前登录用户信息：GET /api/user/me
+    // 現在のログインユーザー情報：GET /api/user/me
     @GetMapping("/me")
     @Operation(summary = "当前用户信息")
     public Result<User> me(@RequestAttribute("userId") Long userId) {

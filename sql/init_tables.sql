@@ -1,12 +1,12 @@
 -- ============================================
--- 日语学习平台 - 建表脚本（word/question/...）
--- 目标库: japanese_learning (MySQL 3307)
--- 说明: user 表已建，本脚本创建其余 8 张业务表
+-- 日本語学習プラットフォーム - 建表スクリプト（word/question/...）
+-- 対象DB: japanese_learning（MySQL 3307）
+-- 備考: user テーブルは作成済み。本スクリプトは残り 8 つの業務テーブルを作成する
 -- ============================================
 
 USE japanese_learning;
 
--- 0. 用户表（幂等，已存在则跳过）
+-- 0. ユーザーテーブル（冪等、既存ならスキップ）
 CREATE TABLE IF NOT EXISTS user (
     id         INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     username   VARCHAR(50)  NOT NULL UNIQUE COMMENT '用户名',
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS user (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间'
 ) COMMENT '用户表';
 
--- 1. 单词表
+-- 1. 単語テーブル
 CREATE TABLE IF NOT EXISTS word (
     id             INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     word           VARCHAR(100)  NOT NULL COMMENT '日语写法(汉字+假名)',
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS word (
     created_at     DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
 ) COMMENT '单词表';
 
--- 2. 题目表
+-- 2. 問題テーブル
 CREATE TABLE IF NOT EXISTS question (
     id         INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     level      VARCHAR(10) NOT NULL COMMENT '等级 N1~N5',
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS question (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
 ) COMMENT '题目表';
 
--- 3. 选项表
+-- 3. 選択肢テーブル
 CREATE TABLE IF NOT EXISTS question_option (
     id          INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     question_id INT          NOT NULL COMMENT '所属题目ID',
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS question_option (
     CONSTRAINT fk_option_question FOREIGN KEY (question_id) REFERENCES question(id)
 ) COMMENT '选项表';
 
--- 4. 答题记录表
+-- 4. 解答記録テーブル
 CREATE TABLE IF NOT EXISTS answer_record (
     id          INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     user_id     INT       NOT NULL COMMENT '用户ID',
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS answer_record (
     CONSTRAINT fk_record_question FOREIGN KEY (question_id) REFERENCES question(id)
 ) COMMENT '答题记录表';
 
--- 5. 错题本表
+-- 5. 誤答ノートテーブル
 CREATE TABLE IF NOT EXISTS wrong_book (
     id            INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     user_id       INT       NOT NULL COMMENT '用户ID',
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS wrong_book (
     CONSTRAINT fk_wrong_question FOREIGN KEY (question_id) REFERENCES question(id)
 ) COMMENT '错题本表';
 
--- 6. 单词记忆状态表
+-- 6. 単語記憶ステータステーブル
 CREATE TABLE IF NOT EXISTS word_memory (
     id          INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     user_id     INT       NOT NULL COMMENT '用户ID',
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS word_memory (
     CONSTRAINT fk_memory_word FOREIGN KEY (word_id) REFERENCES word(id)
 ) COMMENT '单词记忆状态表';
 
--- 7. 学习进度表
+-- 7. 学習進捗テーブル
 CREATE TABLE IF NOT EXISTS study_progress (
     id          INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     user_id     INT       NOT NULL COMMENT '用户ID',
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS study_progress (
     CONSTRAINT fk_progress_user FOREIGN KEY (user_id) REFERENCES user(id)
 ) COMMENT '学习进度表';
 
--- 8. 每日打卡表
+-- 8. 毎日チェックインテーブル
 CREATE TABLE IF NOT EXISTS daily_checkin (
     id           INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     user_id      INT  NOT NULL COMMENT '用户ID',

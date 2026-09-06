@@ -16,16 +16,16 @@ public interface CheckinMapper {
     @Options(useGeneratedKeys = true,keyProperty = "id")
     int insert(Checkin checkin);
 
-    // 查询某月已打卡的日期列表
-// 参数：userId 用户ID, month 月份字符串，格式 "2026-08"
-// 返回：该月所有 checkin_date，如 ["2026-08-24", "2026-08-25"]
+    // 指定月にチェックイン済みの日付一覧を取得
+// パラメータ：userId ユーザーID、month 月文字列（形式 "2026-08"）
+// 戻り値：当月の全 checkin_date（例 ["2026-08-24", "2026-08-25"]）
     @Select("SELECT checkin_date FROM daily_checkin "
             + "WHERE user_id = #{userId} AND DATE_FORMAT(checkin_date, '%Y-%m') = #{month} "
             + "ORDER BY checkin_date")
     List<LocalDate> findByMonth(@Param("userId") Integer userId,
                                 @Param("month") String month);
 
-    // 查该用户全部打卡日期（按时间升序），用于统计连续天数
+    // 対象ユーザーの全チェックイン日付を時間昇順で取得（連続日数の集計用）
     @Select("SELECT checkin_date FROM daily_checkin WHERE user_id = #{userId} ORDER BY checkin_date")
     List<LocalDate> findAllDates(@Param("userId") Integer userId);
 

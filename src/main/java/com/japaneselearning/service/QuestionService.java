@@ -5,13 +5,13 @@ import java.util.List;
 
 public interface QuestionService {
 
-    // 条件分页查题目（level/type 可空）
+    // 条件付きページングで問題を取得（level/type は空可）
     List<Question> findByCondition(String level, String type, int page, int size);
 
-    // 条件统计总数
+    // 条件付きで総数を集計
     int countByCondition(String level, String type);
 
-    // 随机抽题
+    // ランダム出題
     List<Question> findRandom(String level, int count);
 
     Question findDetail(Integer id);

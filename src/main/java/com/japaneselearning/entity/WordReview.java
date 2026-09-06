@@ -5,13 +5,13 @@ import java.time.LocalDateTime;
 
 public class WordReview {
 
-    private Long id;                 // 主键
-    private Integer userId;          // 用户ID
-    private Integer wordId;          // 单词ID
-    private Integer repetitions;     // 连续答对次数
-    private Integer intervalDays;    // 当前间隔（天）
-    private LocalDate dueDate;       // 下次到期日
-    private LocalDateTime lastReviewedAt; // 上次复习时间
+    private Long id;                 // 主キー
+    private Integer userId;          // ユーザーID
+    private Integer wordId;          // 単語ID
+    private Integer repetitions;     // 連続正解回数
+    private Integer intervalDays;    // 現在の間隔（日）
+    private LocalDate dueDate;       // 次回復習予定日
+    private LocalDateTime lastReviewedAt; // 前回復習日時
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
